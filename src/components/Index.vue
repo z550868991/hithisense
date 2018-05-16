@@ -38,6 +38,7 @@ export default {
                     if (!res.body) {
                         this.$router.push('/login')
                     } else {
+                        this.$store.commit('setUserInfor', res.body.user, res.body.type)
                         this.user = res.body.user
                         this.account = res.body.account
                         this.$router.push(`/${res.body.type && res.body.type.toLowerCase()}`)

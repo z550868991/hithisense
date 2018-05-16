@@ -272,7 +272,7 @@ export default {
                 isCurrent: 0,
                 infor: ''
             }],
-            publish: true
+            publish: false
         }
     },
     created() {

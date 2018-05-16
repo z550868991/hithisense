@@ -52,7 +52,7 @@ export default {
             .post('/api/cloudplatform/DrBSCInfo')
             .set('contentType', 'application/json')
             .send({
-                userName: 'FreeMan'
+                userName: this.$store.state.userInfor.user
             })
             .end((err, res) => {
                 if (!!err) {
