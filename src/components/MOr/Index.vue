@@ -38,7 +38,14 @@
 <script>
 export default {
     data() {
-        return {}
+        return {
+        }
+    },
+    created() {
+        let r = location.href.split('mor/')
+        if (!r[1]) {
+            this.$router.replace('/mor/comppublish')
+        }
     }
 }
 </script>
