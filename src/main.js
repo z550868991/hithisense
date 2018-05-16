@@ -22,10 +22,10 @@ const store = new Vuex.Store({
         }
     },
     mutations: {
-        setUserInfor(state, user, type, account) {
-            state.userInfor.user = user
-            state.userInfor.type = type
-            state.userInfor.account = account
+        setUserInfor(state, infor) {
+            state.userInfor.user = infor.user
+            state.userInfor.type = infor.type
+            state.userInfor.account = infor.account
         }
     }
 })

@@ -44,7 +44,10 @@ export default {
                 version: '',
                 status: ''
             },
-            infor: []
+            infor: [{
+                bscID: '1',
+                version: '1.0.1'
+            }]
         }
     },
     mounted() {

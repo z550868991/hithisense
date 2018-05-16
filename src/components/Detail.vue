@@ -52,7 +52,8 @@
                         <p class="title">服务信息</p>
                     </template>
                     <div class="service-wrapper">
-                        <div class="service-content" v-for="service in services" :key="service.id">
+                        <span v-if="!services.length">暂无数据~</span>
+                        <div class="service-content" v-for="(service, index) in services" :key="service.id">
                             <el-form
                                 class="service-data"
                                 :model="service"
@@ -91,10 +92,14 @@
                                     <el-input v-model="service.serviceFormat" size="mini"></el-input>
                                 </el-form-item>
                             </el-form>
-                            <div class="service-delete operate">
+                            <div class="service-delete operate" @click="deleteService(index)">
                                 删除
                             </div>
                         </div>
+                        <div style="text-align: left">
+                            <el-button type="primary" size="mini" @click="handleAddService">添加</el-button>
+                        </div>
+                        <el-button type="primary">保存配置</el-button>
                     </div>
                 </el-collapse-item>
                 <el-collapse-item name="4">
@@ -107,10 +112,11 @@
                         <p class="title">组件依赖</p>
                     </template>
                     <div class="comp-dependience">
+                        <span v-if="!deps.length">暂无数据~</span>
                         <div
                             class="dep-wrapper"
-                            v-for="dep in deps"
-                            :key="dep.compId">
+                            v-for="(dep, index) in deps"
+                            :key="index">
                             <el-form class="dep-content" :model="dep" label-width=".8rem" :inline="true">
                                 <el-form-item label="组件ID">
                                     <el-input v-model="dep.compId"></el-input>
@@ -119,12 +125,12 @@
                                     <el-input v-model="dep.compVersion"></el-input>
                                 </el-form-item>
                             </el-form>
-                            <div class="dep-delete operate">
+                            <div class="dep-delete operate" @click="deleteDep(index)">
                                 删除
                             </div>
                         </div>
                         <div class="add-wrapper">
-                            <el-button type="primary" size="mini">添加</el-button>
+                            <el-button type="primary" size="mini" @click="addDep">添加</el-button>
                         </div>
                         <el-button type="primary" size="mini">保存配置</el-button>
                     </div>
@@ -231,7 +237,7 @@
     </div>
 </template>
 <script>
-import {query, formatDate, formatTime} from '@/utils'
+import {query, formatDate, formatTime, uuid} from '@/utils'
 import ComponentInfor from '@/components/ComponentInfor'
 
 export default {
@@ -276,7 +282,25 @@ export default {
                 isCurrent: 0,
                 infor: ''
             }],
-            publish: false
+            newService: {
+                seviceId: '',
+                serviceName: '',
+                serviceType: '',
+                servicePath: '',
+                serviceParam: '',
+                serviceOpen: '',
+                serviceSecurity: '',
+                serviceMethod: '',
+                serviceKey: '',
+                serviceReturnvaluetype: '',
+                serviceFormat: ''
+            },
+            newDep: {
+                compId: '',
+                compVersion: ''
+            },
+            publish: false,
+            showAddService: false
         }
     },
     created() {
@@ -321,10 +345,14 @@ export default {
     mounted() {
     },
     methods: {
+        uuid,
         formatDate,
         formatTime,
         submit() {
             this.publish = true
+        },
+        deleteService(index) {
+            this.services.splice(index, 1)
         },
         saveDesc() {
             this.$request
@@ -346,6 +374,19 @@ export default {
                         this.$message('保存成功！')
                     }
                 })
+        },
+        handleAddService() {
+            let id = uuid();
+            this.services.push({
+                ...this.newService,
+                seviceId: id
+            })
+        },
+        addDep() {
+            this.deps.push({...this.newDep})
+        },
+        deleteDep(index) {
+            this.deps.splice(index, 1)
         }
     }
 }
@@ -437,6 +478,12 @@ export default {
                 padding: 0 .1rem
                 .el-form-item
                     min-width: 30%
+    .add-service
+        .el-form
+            text-align: left
+            .el-form-item
+                .el-input
+                    max-width: 70%
     .content-footer
         position: fixed
         bottom: 0
@@ -445,5 +492,5 @@ export default {
         padding: .1rem
         text-align: center
         background: rgba(0, 0, 0, .1)
-        z-index: 3000
+        z-index: 2000
 </style>
