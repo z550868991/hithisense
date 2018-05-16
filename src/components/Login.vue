@@ -76,7 +76,11 @@ export default {
                         if(res.text === '[msg]AccountError') this.$message('账号不存在！');
                         else if(res.text === '[msg]PasswordError') this.$message('密码错误！');
                         else if(res.text === '[msg]JurisdictionError') this.$message('权限错误！');
-                        else this.$router.push(`/${this.form.type && this.form.type.toLowerCase()}`)
+                        else{
+                            localStorage.setItem('user',res.text)
+                            this.$store.commit('setUserInfor', res.text, this.form.type, this.form.id)
+                            this.$router.push(`/${this.form.type && this.form.type.toLowerCase()}`)
+                        }
                     }
                 })
             }

@@ -14,20 +14,21 @@ Vue.prototype.$request = request
 Vue.use(Vuex)
 Vue.use(ElementUI)
 
-const store = {
+const store = new Vuex.Store({
     state: {
         userInfor: {
             user: '',
             type: ''
         }
     },
-    mutation: {
-        setUserInfor(state, user, type) {
-            state.user = user
-            state.type = type
+    mutations: {
+        setUserInfor(state, user, type, account) {
+            state.userInfor.user = user
+            state.userInfor.type = type
+            state.userInfor.account = account
         }
     }
-}
+})
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

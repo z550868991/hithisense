@@ -4,9 +4,9 @@
             <el-header>
                 <p class="title header-item">HITHISENSE云平台</p>
                 <p class="user-infor header-item">
-                    <span>角色名称：{{user}}</span>
+                    <span>角色名称：{{$store.state.userInfor.user}}</span>
                     <span class="content">
-                        <span class="user">{{account}}</span>
+                        <span class="user">{{$store.state.userInfor.account}}</span>
                         <span class="logout" @click="logout">注销</span>
                     </span>
                 </p>
@@ -21,30 +21,28 @@
 export default {
     data() {
         return {
-            user: '',
-            account: ''
         }
     },
-    created() {
-        this.$request
-            .get('/api/cloudplatform/getSession')
-            .end((err, res) => {
-                if (!!err) {
-                    this.$message({
-                        type: 'error',
-                        message: err.response.text
-                    })
-                } else {
-                    if (!res.body) {
-                        this.$router.push('/login')
+    mounted() {
+        if(!this.$store.state.userInfor.user){
+            this.$request
+                .get('/api/cloudplatform/getSession')
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
                     } else {
-                        this.$store.commit('setUserInfor', res.body.user, res.body.type)
-                        this.user = res.body.user
-                        this.account = res.body.account
-                        this.$router.push(`/${res.body.type && res.body.type.toLowerCase()}`)
+                        if (!res.body) {
+                            this.$router.push('/login')
+                        } else {
+                            this.$store.commit('setUserInfor', res.body.user, res.body.type, res.body.account)
+                            this.$router.push(`/${res.body.type && res.body.type.toLowerCase()}`)
+                        }
                     }
-                }
-            })
+                })
+        }
     },
     methods: {
         logout() {

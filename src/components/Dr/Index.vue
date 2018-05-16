@@ -47,12 +47,12 @@ export default {
             infor: []
         }
     },
-    created() {
+    mounted() {
         this.$request
             .post('/api/cloudplatform/DrBSCInfo')
             .set('contentType', 'application/json')
             .send({
-                userName: this.$store.state.userInfor.user
+                userName: this.$store.state.userInfor.user || localStorage.getItem('user')
             })
             .end((err, res) => {
                 if (!!err) {
