@@ -17,32 +17,30 @@
                 width="50%">
             </el-table-column>
             <el-table-column
-                prop="compId"
+                prop="bscID"
                 label="组件ID">
             </el-table-column>
             <el-table-column
-                prop="compName"
+                prop="bscName"
                 label="组件名称">
             </el-table-column>
             <el-table-column
-                prop="compVersion"
+                prop="version"
                 label="组件版本">
             </el-table-column>
             <el-table-column
-                prop="compStatus"
                 label="组件状态">
+                <template slot-scope="scope">
+                    {{scope.row.open ? '已发布' : '未发布'}}
+                </template>
             </el-table-column>
             <el-table-column
+                prop="bscTime"
                 label="创建时间">
-                <template slot-scope="scope">
-                    {{formatDate(scope.row.createdTime)}}
-                </template>
             </el-table-column>
             <el-table-column
+                prop="modifiedTime"
                 label="修改时间">
-                <template slot-scope="scope">
-                    {{formatDate(scope.row.lastModifiedTime)}}
-                </template>
             </el-table-column>
         </el-table>
     </div>
@@ -66,7 +64,7 @@ export default {
     methods: {
         formatDate,
         goForDetail(row, event) {
-            this.$router.push(`/detail?id=${row.id}&version=${row.version}`)
+            this.$router.push(`/detail?id=${row.bscID}&version=${row.version}`)
         },
         selectChange(selection) {
             console.log(selection)

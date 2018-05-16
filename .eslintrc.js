@@ -28,6 +28,8 @@ module.exports = {
     'space-before-function-paren': 0,
     'indent': 0,
     'no-mixed-operators': 0,
-    'no-extra-boolean-cast': 0
+    'no-extra-boolean-cast': 0,
+    'semi': 0,
+    'keyword-spacing': 0
   }
 }

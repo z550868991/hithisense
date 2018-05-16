@@ -32,20 +32,15 @@ export default {
                 if (!!err) {
                     this.$message({
                         type: 'error',
-                        message: err.response.text = '未登入'
+                        message: err.response.text
                     })
                 } else {
                     if (!res.body) {
                         this.$router.push('/login')
                     } else {
-                        if(res.body.user == "[msg]AccountError") alert('账号不存在！');
-                        else if(res.body.user == "[msg]PasswordError") alert('密码错误！');
-                        else if(res.body.user == "[msg]JurisdictionError") alert('权限错误！');
-                        else{
-                            this.user = res.body.user
-                            this.account = res.body.account
-                            this.$router.push(`/${res.body.type && res.body.type.toLowerCase()}`)
-                        }
+                        this.user = res.body.user
+                        this.account = res.body.account
+                        this.$router.push(`/${res.body.type && res.body.type.toLowerCase()}`)
                     }
                 }
             })

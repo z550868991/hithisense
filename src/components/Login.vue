@@ -49,9 +49,9 @@ export default {
     },
     methods: {
         login() {
-            if(this.form.id == '') alert('账号为空！')
-            else if(this.form.pwd == '') alert('密码为空！')
-            else if(this.form.type == '') alert('请选择登入角色！')
+            if(this.form.id === '') this.$message('账号为空！')
+            else if(this.form.pwd === '') this.$message('密码为空！')
+            else if(this.form.type === '') this.$message('请选择登入角色！')
             else{
                 this.$request
                 .post('/api/cloudplatform/login')
@@ -73,9 +73,9 @@ export default {
                             message: err.response.text
                         })
                     } else {
-                        if(res.text == "[msg]AccountError") alert('账号不存在！');
-                        else if(res.text == "[msg]PasswordError") alert('密码错误！');
-                        else if(res.text == "[msg]JurisdictionError") alert('权限错误！');
+                        if(res.text === '[msg]AccountError') this.$message('账号不存在！');
+                        else if(res.text === '[msg]PasswordError') this.$message('密码错误！');
+                        else if(res.text === '[msg]JurisdictionError') this.$message('权限错误！');
                         else this.$router.push(`/${this.form.type && this.form.type.toLowerCase()}`)
                     }
                 })

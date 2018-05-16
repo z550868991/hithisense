@@ -44,18 +44,26 @@ export default {
                 version: '',
                 status: ''
             },
-            infor: [{
-                id: '1121',
-                name: '测试',
-                version: '1.0.1',
-                status: '测试中',
-                occurTime: 1526208151974,
-                changeTime: 1526208151974
-            }]
+            infor: []
         }
     },
     created() {
-
+        this.$request
+            .post('/api/cloudplatform/DrBSCInfo')
+            .set('contentType', 'application/json')
+            .send({
+                userName: 'FreeMan'
+            })
+            .end((err, res) => {
+                if (!!err) {
+                    this.$message({
+                        type: 'error',
+                        message: err.response.text
+                    })
+                } else {
+                    this.infor = res.body;
+                }
+            })
     }
 }
 </script>
