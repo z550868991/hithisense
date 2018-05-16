@@ -20,10 +20,12 @@
 <script>
 export default {
     data() {
-        return {
-        }
+        return {}
     },
     mounted() {
+        console.log(this.$store.state.userInfor.account)
+        console.log(this.$store.state.userInfor.type)
+        console.log(this.$store.state.userInfor.user)
         if(!this.$store.state.userInfor.user) {
             this.$request
                 .get('/api/cloudplatform/getSession')

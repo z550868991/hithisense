@@ -43,6 +43,9 @@ export default {
         goForAdd() {
             this.$router.push()
         }
+    },
+    created() {
+
     }
 }
 </script>
