@@ -12,19 +12,19 @@
                         label-width=".9rem"
                         :inline="true">
                         <el-form-item label="组件ID：">
-                            <span>{{baseInfor.compId}}</span>
+                            <span>{{baseInfor.bscID}}</span>
                         </el-form-item>
                         <el-form-item label="组件名称：">
-                            <span>{{baseInfor.compName}}</span>
+                            <span>{{baseInfor.bscName}}</span>
                         </el-form-item>
                         <el-form-item label="组件版本：">
-                            <el-input v-model="baseInfor.compVersion"></el-input>
+                            <el-input v-model="baseInfor.version"></el-input>
                         </el-form-item>
                         <el-form-item label="创建人：">
-                            <span>{{baseInfor.createBy}}</span>
+                            <span>{{baseInfor.developer}}</span>
                         </el-form-item>
                         <el-form-item label="创建时间：">
-                            <span>{{formatDate(baseInfor.gmtCreate)}} {{formatTime(baseInfor.gmtCreate)}}</span>
+                            <span>{{baseInfor.bscTime}}</span>
                         </el-form-item>
                     </el-form>
                 </el-collapse-item>
@@ -34,7 +34,7 @@
                     </template>
                     <div class="interface">
                         <span class="label">组件统一访问接口：</span>
-                        <el-input v-model="baseInfor.compUrl"></el-input>
+                        <el-input v-model="baseInfor.url"></el-input>
                     </div>
                     <div class="interface">
                         <span class="label">组件描述：</span>
@@ -42,10 +42,10 @@
                             type="textarea"
                             :autosize="{ minRows: 2}"
                             placeholder="请输入内容"
-                            v-model="baseInfor.compDesc">
+                            v-model="baseInfor.description">
                         </el-input>
                     </div>
-                    <el-button type="primary" size="mini">保存配置</el-button>
+                    <el-button type="primary" size="mini" @click="saveDesc">保存配置</el-button>
                 </el-collapse-item>
                 <el-collapse-item name="3">
                     <template slot="title">
@@ -245,13 +245,17 @@ export default {
             activeNames: ['1'],
             publishActiveNames: ['1'],
             baseInfor: {
-                compId: '',
-                compName: '',
-                compVersion: '',
-                gmtCreate: '',
-                createBy: '',
-                compUrl: '',
-                compDesc: ''
+                bscID: '',
+                bscName: '',
+                bscType: '',
+                bscTime: '',
+                modifiedTime: '',
+                bscNum: '',
+                developer: '',
+                version: '',
+                url: '',
+                description: '',
+                open: ''
             },
             services: [],
             deps: [],
@@ -279,6 +283,40 @@ export default {
         let param = query(location.href.split('?')[1])
         this.id = param.id || ''
         this.version = param.version || ''
+        this.$request
+            .post('/api/cloudplatform/selectDrBSCInfo-Main')
+            .set('contentType', 'application/json')
+            .send({
+                id: this.id,
+                version: this.version
+            })
+            .end((err, res) => {
+                if (!!err) {
+                    this.$message({
+                        type: 'error',
+                        message: err.response.text
+                    })
+                } else {
+                    this.baseInfor = res.body
+                }
+            })
+        this.$request
+            .post('/api/cloudplatform/selectDrBSCInfo-Main')
+            .set('contentType', 'application/json')
+            .send({
+                id: this.id,
+                version: this.version
+            })
+            .end((err, res) => {
+                if (!!err) {
+                    this.$message({
+                        type: 'error',
+                        message: err.response.text
+                    })
+                } else {
+                    this.baseInfor = res.body
+                }
+            })
     },
     mounted() {
     },
@@ -287,6 +325,27 @@ export default {
         formatTime,
         submit() {
             this.publish = true
+        },
+        saveDesc() {
+            this.$request
+                .post('/api/cloudplatform/submitDrBSCInfo-Desc')
+                .set('contentType', 'application/json')
+                .send({
+                    id: this.id,
+                    version: this.version,
+                    url: this.baseInfor.url,
+                    desc: this.baseInfor.description
+                })
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        this.$message('保存成功！')
+                    }
+                })
         }
     }
 }

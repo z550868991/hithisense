@@ -54,35 +54,35 @@ export default {
             else if(this.form.type === '') this.$message('请选择登入角色！')
             else{
                 this.$request
-                .post('/api/cloudplatform/login')
-                .set('contentType', 'application/json')
-                .send({
-                    userId: '',
-                    userAccount: this.form.id,
-                    userPwd: this.form.pwd,
-                    userJur: this.form.type,
-                    email: '',
-                    phone: '',
-                    flag: '',
-                    groupId: ''
-                })
-                .end((err, res) => {
-                    if (!!err) {
-                        this.$message({
-                            type: 'error',
-                            message: err.response.text
-                        })
-                    } else {
-                        if(res.text === '[msg]AccountError') this.$message('账号不存在！');
-                        else if(res.text === '[msg]PasswordError') this.$message('密码错误！');
-                        else if(res.text === '[msg]JurisdictionError') this.$message('权限错误！');
-                        else{
-                            localStorage.setItem('user',res.text)
-                            this.$store.commit('setUserInfor', res.text, this.form.type, this.form.id)
-                            this.$router.push(`/${this.form.type && this.form.type.toLowerCase()}`)
+                    .post('/api/cloudplatform/login')
+                    .set('contentType', 'application/json')
+                    .send({
+                        userId: '',
+                        userAccount: this.form.id,
+                        userPwd: this.form.pwd,
+                        userJur: this.form.type,
+                        email: '',
+                        phone: '',
+                        flag: '',
+                        groupId: ''
+                    })
+                    .end((err, res) => {
+                        if (!!err) {
+                            this.$message({
+                                type: 'error',
+                                message: err.response.text
+                            })
+                        } else {
+                            if(res.text === '[msg]AccountError') this.$message('账号不存在！');
+                            else if(res.text === '[msg]PasswordError') this.$message('密码错误！');
+                            else if(res.text === '[msg]JurisdictionError') this.$message('权限错误！');
+                            else{
+                                localStorage.setItem('user', res.text)
+                                this.$store.commit('setUserInfor', res.text, this.form.type, this.form.id)
+                                this.$router.push(`/${this.form.type && this.form.type.toLowerCase()}`)
+                            }
                         }
-                    }
-                })
+                    })
             }
         }
     }

@@ -24,7 +24,7 @@ export default {
         }
     },
     mounted() {
-        if(!this.$store.state.userInfor.user){
+        if(!this.$store.state.userInfor.user) {
             this.$request
                 .get('/api/cloudplatform/getSession')
                 .end((err, res) => {
