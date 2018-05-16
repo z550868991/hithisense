@@ -78,7 +78,11 @@ export default {
                             else if(res.text === '[msg]JurisdictionError') this.$message('权限错误！');
                             else{
                                 localStorage.setItem('user', res.text)
-                                this.$store.commit('setUserInfor', res.text, this.form.type, this.form.id)
+                                this.$store.commit('setUserInfor', {
+                                    user: res.text,
+                                    type: this.form.type,
+                                    account: this.form.id
+                                })
                                 this.$router.push(`/${this.form.type && this.form.type.toLowerCase()}`)
                             }
                         }
