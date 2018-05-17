@@ -15,6 +15,7 @@
                             <el-radio v-for="item in typeE" :key="item" :label="item">{{item}}</el-radio>
                         </el-radio-group>
                     </div>
+                    <div class="desc" v-if="!!form.type">{{form.type}}：{{typeEnum[form.type]}}</div>
                     <el-button class="submit" type="primary" @click="login">登入</el-button>
                     <p class="register">
                         <a href="/#/register">注册</a>
@@ -118,9 +119,9 @@ export default {
             font-size: .3rem
         .edit-wrapper
             width: 4rem
-            height: 3rem
             margin: 0 auto
             padding-top: .2rem
+            padding-bottom: .1rem
             border-radius: .05rem
             box-sizing: border-box
             background: rgba(255, 255, 255, .2)
@@ -141,6 +142,10 @@ export default {
                         margin-left: 0
                         .el-radio__label
                             color: #ffffff
+            .desc
+                margin: .1rem auto 0
+                width: 80%
+                text-align: left
             .submit
                 width: 80%
                 margin-top: .15rem

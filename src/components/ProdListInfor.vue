@@ -26,16 +26,26 @@
                 label="产品版本">
             </el-table-column>
             <el-table-column
+                v-if="!isOrder"
                 prop="pdtStatus"
                 label="状态">
             </el-table-column>
             <el-table-column
+                v-if="!isOrder"
                 prop="createdTime"
                 label="创建时间">
             </el-table-column>
             <el-table-column
+                v-if="!isOrder"
                 prop="lastModifiedTime"
                 label="修改时间">
+            </el-table-column>
+            <el-table-column
+                v-if="isOrder"
+                label="产品价格">
+                <template slot-scope="scope">
+                    <el-input v-model="scope.row.pdtPrice"></el-input>
+                </template>
             </el-table-column>
         </el-table>
     </div>
@@ -46,6 +56,10 @@ export default {
         prodList: {
             type: Array,
             required: true
+        },
+        isOrder: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -53,8 +67,8 @@ export default {
         }
     },
     methods: {
-        goForDetail() {
-            this.$router.push()
+        goForDetail(row, event) {
+            this.$router.push(`/prodDetail?id=${row.pdtId}&version=${row.pdtVersion}`)
         }
     }
 }

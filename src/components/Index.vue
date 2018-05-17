@@ -73,8 +73,13 @@ export default {
 <style lang="stylus" scoped>
 .index
     .el-header
+        position: fixed
+        top: 0
+        left: 0
+        right: 0
         padding: 0
         height: .6rem
+        z-index: 2900
         .header-item
             width: 100%
             color: #ffffff
@@ -100,5 +105,6 @@ export default {
                     &:hover
                         text-decoration: underline
     .el-main
+        margin-top: .6rem
         padding: 0
 </style>
