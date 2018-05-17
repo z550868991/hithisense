@@ -18,7 +18,8 @@
                             <span>{{baseInfor.ogId}}</span>
                         </el-form-item>
                         <el-form-item label="创建人">
-                            <span>{{baseInfor.createdBy}}</span>
+                            <el-input v-if="isGr" v-model="baseInfor.createdBy" placeholder="输入创建人"></el-input>
+                            <span v-else>{{baseInfor.createdBy}}</span>
                         </el-form-item>
                         <el-form-item label="订单状态">
                             <span>{{baseInfor.orderStatus}}</span>
@@ -30,19 +31,22 @@
                         <p class="title">订购明细</p>
                     </template>
                     <div class="prod-wrapper">
-                        <prod-list-infor :prodList="prodList" :isOrder="true"></prod-list-infor>
+                        <prod-list-infor :prodList="prodList" :isOrder="true" :isGr="isGr" @deletePro="deletePro"></prod-list-infor>
                     </div>
                 </el-collapse-item>
                 <el-collapse-item name="3">
                     <template slot="title">
                         <p class="title">质量需求</p>
                     </template>
-                    <div class="sla-wrapper" v-for="sla in slas" :key="sla.prodId">
+                    <div class="sla-wrapper" v-for="(sla, index) in slas" :key="sla.prodId">
                         <div class="sla-infor">
                             <span>产品ID： {{sla.prodId}}</span>
                             <span>产品版本： {{sla.prodVersion}}</span>
                         </div>
-                        <sla-list-infor :slaList="sla.slaList"></sla-list-infor>
+                        <sla-list-infor class="sla-list-infor" :slaList="sla.slaList" :isGr="isGr" @deleteSla="deleteSla" :sla="index"></sla-list-infor>
+                        <div class="add-wrapper">
+                            <el-button v-if="isGr" type="primary" size="mini" @click="addSla(sla.slaList)">添加</el-button>
+                        </div>
                     </div>
                 </el-collapse-item>
                 <el-collapse-item name="4">
@@ -82,7 +86,7 @@
 import ProdListInfor from '@/components/ProdListInfor'
 import SlaListInfor from '@/components/SlaListInfor'
 import {prodTypeEnum} from '@/dataMap'
-import {query, formatDate} from '@/utils'
+import {query, formatDate, uuid} from '@/utils'
 
 export default {
     components: {
@@ -100,20 +104,45 @@ export default {
                 orderStatus: ''
             },
             prodList: [],
-            slas: [],
+            slas: [{
+                prodId: '1',
+                prodVersion: '111',
+                slaList: [{}]
+            }],
             approveInfor: {
                 approver: '',
                 approveDesc: '',
                 approveDate: ''
-            }
+            },
+            isGr: false
         }
     },
     created() {
         let param = query(location.href.split('?')[1])
-        if (!!param.id) {
-            this.baseInfor.orderId = param.id
+        if (!!param.isGr) {
+            let id = uuid()
+            this.isGr = true
+            this.baseInfor.orderId = id
+        } else {
+            if (!!param.id) {
+                this.baseInfor.orderId = param.id
+            }
+            this.approveInfor.approveDate = formatDate(Date.now())
         }
-        this.approveInfor.approveDate = formatDate(Date.now())
+    },
+    methods: {
+        deletePro(index) {
+            this.prodList.splice(index, 1)
+        },
+        deleteSla(sla, index) {
+            this.slas[sla].slaList.splice(index, 1)
+        },
+        addSla(list) {
+            list.push({
+                slaCoding: '',
+                slaContent: '',
+            })
+        }
     }
 }
 </script>
@@ -142,13 +171,17 @@ export default {
             width: 90%
             margin: 0 auto
             margin-bottom: .2rem
-            box-shadow: -0.05rem .1rem .1rem #F2F6FC
             .sla-infor
                 text-align: left
                 span
                     margin-left: 1rem
                     &:first-child
                         margin-left: 0
+            .sla-list-infor
+                box-shadow: -0.05rem .1rem .1rem #F2F6FC
+            .add-wrapper
+                margin-top: .1rem
+                text-align: left
         .approve-wrapper
             .el-form-item
                 width: 90%
