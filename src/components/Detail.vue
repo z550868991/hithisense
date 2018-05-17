@@ -59,7 +59,7 @@
                                 :model="service"
                                 :inline="true">
                                 <el-form-item label="服务ID">
-                                    <span>{{service.seviceId}}</span>
+                                    <span>{{service.serviceId}}</span>
                                 </el-form-item>
                                 <el-form-item label="服务名称">
                                     <el-input v-model="service.serviceName" size="mini"></el-input>
@@ -99,7 +99,7 @@
                         <div style="text-align: left">
                             <el-button type="primary" size="mini" @click="handleAddService">添加</el-button>
                         </div>
-                        <el-button type="primary">保存配置</el-button>
+                        <el-button type="primary" @click="saveService">保存配置</el-button>
                     </div>
                 </el-collapse-item>
                 <el-collapse-item name="4">
@@ -119,10 +119,10 @@
                             :key="index">
                             <el-form class="dep-content" :model="dep" label-width=".8rem" :inline="true">
                                 <el-form-item label="组件ID">
-                                    <el-input v-model="dep.compId"></el-input>
+                                    <el-input v-model="dep.id"></el-input>
                                 </el-form-item>
                                 <el-form-item label="组件版本">
-                                    <el-input v-model="dep.compVersion"></el-input>
+                                    <el-input v-model="dep.version"></el-input>
                                 </el-form-item>
                             </el-form>
                             <div class="dep-delete operate" @click="deleteDep(index)">
@@ -132,7 +132,7 @@
                         <div class="add-wrapper">
                             <el-button type="primary" size="mini" @click="addDep">添加</el-button>
                         </div>
-                        <el-button type="primary" size="mini">保存配置</el-button>
+                        <el-button type="primary" size="mini" @click="saveRel">保存配置</el-button>
                     </div>
                 </el-collapse-item>
                 <el-collapse-item name="6">
@@ -148,7 +148,7 @@
                                 <el-input v-model="database.dbVersionId"></el-input>
                             </el-form-item>
                         </el-form>
-                        <el-button type="primary" size="mini">保存配置</el-button>
+                        <el-button type="primary" size="mini" @click="saveDs">保存配置</el-button>
                     </div>
                 </el-collapse-item>
                 <el-collapse-item name="7">
@@ -267,7 +267,13 @@ export default {
             deps: [],
             database: {
                 dbName: '',
-                dbVersionId: ''
+                dbVersionId: '',
+                h2compId: '',
+                deployVersionId: '',
+                createdBy: '',
+                gmtCreate: '',
+                modifiedBy: '',
+                gmtModified: ''
             },
             dataModel: [],
             compConfig: {
@@ -283,21 +289,21 @@ export default {
                 infor: ''
             }],
             newService: {
-                seviceId: '',
+                serviceId: '',
                 serviceName: '',
                 serviceType: '',
                 servicePath: '',
                 serviceParam: '',
-                serviceOpen: '',
-                serviceSecurity: '',
+                serviceOpen: false,
+                serviceSecurity: false,
                 serviceMethod: '',
                 serviceKey: '',
                 serviceReturnvaluetype: '',
                 serviceFormat: ''
             },
             newDep: {
-                compId: '',
-                compVersion: ''
+                id: '',
+                version: ''
             },
             publish: false,
             showAddService: false
@@ -325,7 +331,7 @@ export default {
                 }
             })
         this.$request
-            .post('/api/cloudplatform/selectDrBSCInfo-Main')
+            .post('/api/cloudplatform/selectBSCInfo-Service')
             .set('contentType', 'application/json')
             .send({
                 id: this.id,
@@ -338,7 +344,58 @@ export default {
                         message: err.response.text
                     })
                 } else {
-                    this.baseInfor = res.body
+                    this.services = res.body
+                }
+            })
+        this.$request
+            .post('/api/cloudplatform/selectBSCInfo-Rel')
+            .set('contentType', 'application/json')
+            .send({
+                id: this.id,
+                version: this.version
+            })
+            .end((err, res) => {
+                if (!!err) {
+                    this.$message({
+                        type: 'error',
+                        message: err.response.text
+                    })
+                } else {
+                    this.deps = res.body
+                }
+            })
+        this.$request
+            .post('/api/cloudplatform/selectBSCInfo-Ds')
+            .set('contentType', 'application/json')
+            .send({
+                id: this.id,
+                version: this.version
+            })
+            .end((err, res) => {
+                if (!!err) {
+                    this.$message({
+                        type: 'error',
+                        message: err.response.text
+                    })
+                } else {
+                    this.database = res.body
+                }
+            })
+        this.$request
+            .post('/api/cloudplatform/selectDrBSCDm')
+            .set('contentType', 'application/json')
+            .send({
+                id: this.id,
+                version: this.version
+            })
+            .end((err, res) => {
+                if (!!err) {
+                    this.$message({
+                        type: 'error',
+                        message: err.response.text
+                    })
+                } else {
+                    this.dataModel = res.body
                 }
             })
     },
@@ -375,15 +432,80 @@ export default {
                     }
                 })
         },
+        saveService() {
+            let result = [...this.services];
+            if(this.services.length === 0) {
+                result.push({
+                    ...this.newService,
+                    bscID: this.id,
+                    bscVersion: this.version
+                })
+            }
+            this.$request
+                .post('/api/cloudplatform/submitDrBSCInfo-Service')
+                .set('contentType', 'application/json')
+                .send(result)
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        this.$message('保存成功！')
+                    }
+                })
+        },
+        saveRel() {
+            let result = [...this.deps];
+            result.unshift({
+                id: this.id,
+                version: this.version
+            })
+            this.$request
+                .post('/api/cloudplatform/submitDrBSCInfo-Rel')
+                .set('contentType', 'application/json')
+                .send(result)
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        this.$message('保存成功！')
+                    }
+                })
+        },
+        saveDs() {
+            this.$request
+                  .post('/api/cloudplatform/submitDrBSCInfo-Ds')
+                  .set('contentType', 'application/json')
+                  .send(this.database)
+                  .end((err, res) => {
+                      if (!!err) {
+                          this.$message({
+                              type: 'error',
+                              message: err.response.text
+                          })
+                      } else {
+                          this.$message('保存成功！')
+                      }
+                  })
+        },
         handleAddService() {
             let id = uuid();
             this.services.push({
                 ...this.newService,
-                seviceId: id
+                serviceId: id,
+                bscID: this.id,
+                bscVersion: this.version
             })
         },
         addDep() {
-            this.deps.push({...this.newDep})
+            this.deps.push({
+                ...this.newDep
+            })
         },
         deleteDep(index) {
             this.deps.splice(index, 1)
