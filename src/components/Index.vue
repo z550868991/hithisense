@@ -23,32 +23,29 @@ export default {
         return {}
     },
     mounted() {
-        console.log(this.$store.state.userInfor.account)
-        console.log(this.$store.state.userInfor.type)
-        console.log(this.$store.state.userInfor.user)
-        if(!this.$store.state.userInfor.user) {
-            this.$request
-                .get('/api/cloudplatform/getSession')
-                .end((err, res) => {
-                    if (!!err) {
-                        this.$message({
-                            type: 'error',
-                            message: err.response.text
-                        })
-                    } else {
-                        if (!res.body) {
-                            this.$router.push('/login')
-                        } else {
-                            this.$store.commit('setUserInfor', {
-                                user: res.text,
-                                type: this.form.type,
-                                account: this.form.id
-                            })
-                            this.$router.push(`/${res.body.type && res.body.type.toLowerCase()}`)
-                        }
-                    }
-                })
-        }
+        // if(!this.$store.state.userInfor.user) {
+        //     this.$request
+        //         .get('/api/cloudplatform/getSession')
+        //         .end((err, res) => {
+        //             if (!!err) {
+        //                 this.$message({
+        //                     type: 'error',
+        //                     message: err.response.text
+        //                 })
+        //             } else {
+        //                 if (!res.body) {
+        //                     this.$router.push('/login')
+        //                 } else {
+        //                     this.$store.commit('setUserInfor', {
+        //                         user: res.text,
+        //                         type: this.form.type,
+        //                         account: this.form.id
+        //                     })
+        //                     this.$router.push(`/${res.body.type && res.body.type.toLowerCase()}`)
+        //                 }
+        //             }
+        //         })
+        // }
     },
     methods: {
         logout() {
@@ -71,8 +68,13 @@ export default {
 <style lang="stylus" scoped>
 .index
     .el-header
+        position: fixed
+        top: 0
+        left: 0
+        right: 0
         padding: 0
         height: .6rem
+        z-index: 2900
         .header-item
             width: 100%
             color: #ffffff
@@ -98,5 +100,6 @@ export default {
                     &:hover
                         text-decoration: underline
     .el-main
+        margin-top: .6rem
         padding: 0
 </style>

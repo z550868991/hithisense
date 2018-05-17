@@ -4,6 +4,7 @@ import Index from '@/components/Index'
 import Login from '@/components/Login'
 import DrIndex from '@/components/Dr/Index'
 import MOrIndex from '@/components/MOr/Index'
+import GrIndex from '@/components/Gr/Index'
 import MOrCompPublish from '@/components/MOr/CompPublish'
 import MOrIscList from '@/components/MOr/IscList'
 import MOrIscRequest from '@/components/MOr/IscRequest'
@@ -11,6 +12,9 @@ import MOrOrder from '@/components/MOr/Order'
 import MOeProdList from '@/components/MOr/ProdList'
 import MOrUserRegister from '@/components/MOr/UserRegister'
 import Detail from '@/components/Detail'
+import ProdDetail from '@/components/ProdDetail'
+import OrderDetail from '@/components/OrderDetail'
+import IscDetail from '@/components/IscDetail'
 
 Vue.use(Router)
 
@@ -27,6 +31,18 @@ export default new Router({
             {
                 path: 'detail',
                 component: Detail
+            },
+            {
+                path: 'proddetail',
+                component: ProdDetail
+            },
+            {
+                path: 'orderdetail',
+                component: OrderDetail
+            },
+            {
+                path: 'iscdetail',
+                component: IscDetail
             },
             {
                 path: 'mor',
@@ -57,6 +73,10 @@ export default new Router({
                         component: MOrUserRegister
                     }
                 ]
+            },
+            {
+                path: 'gr',
+                component: GrIndex
             }
         ]
     },
