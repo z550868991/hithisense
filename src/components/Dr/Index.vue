@@ -51,6 +51,7 @@ export default {
         }
     },
     mounted() {
+        console.log(localStorage.getItem('user'))
         this.$request
             .post('/api/cloudplatform/DrBSCInfo')
             .set('contentType', 'application/json')
