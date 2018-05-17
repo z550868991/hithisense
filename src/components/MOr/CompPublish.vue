@@ -41,7 +41,7 @@ export default {
     },
     methods: {
         goForAdd() {
-            this.$router.push()
+            // this.$router.push()
         }
     },
     created() {

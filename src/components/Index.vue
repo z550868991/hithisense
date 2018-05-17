@@ -4,9 +4,9 @@
             <el-header>
                 <p class="title header-item">HITHISENSE云平台</p>
                 <p class="user-infor header-item">
-                    <span>角色名称：{{$store.state.userInfor.user}}</span>
+                    <span>角色名称：{{userName}}</span>
                     <span class="content">
-                        <span class="user">{{$store.state.userInfor.account}}</span>
+                        <span class="user">{{userAccount}}</span>
                         <span class="logout" @click="logout">注销</span>
                     </span>
                 </p>
@@ -23,29 +23,34 @@ export default {
         return {}
     },
     mounted() {
-        // if(!this.$store.state.userInfor.user) {
-        //     this.$request
-        //         .get('/api/cloudplatform/getSession')
-        //         .end((err, res) => {
-        //             if (!!err) {
-        //                 this.$message({
-        //                     type: 'error',
-        //                     message: err.response.text
-        //                 })
-        //             } else {
-        //                 if (!res.body) {
-        //                     this.$router.push('/login')
-        //                 } else {
-        //                     this.$store.commit('setUserInfor', {
-        //                         user: res.text,
-        //                         type: this.form.type,
-        //                         account: this.form.id
-        //                     })
-        //                     this.$router.push(`/${res.body.type && res.body.type.toLowerCase()}`)
-        //                 }
-        //             }
-        //         })
-        // }
+        if(!this.$store.state.userInfor.user) {
+            this.$request
+                .get('/api/cloudplatform/getSession')
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        if (!res.body) {
+                            this.$router.push('/login')
+                        } else {
+                            this.$store.commit('setUserInfor', {
+                                ...res.body
+                            })
+                        }
+                    }
+                })
+        }
+    },
+    computed: {
+        userName() {
+            return this.$store.state.userInfor.user || localStorage.user
+        },
+        userAccount() {
+            return this.$store.state.userInfor.account || localStorage.account
+        }
     },
     methods: {
         logout() {

@@ -7,13 +7,13 @@
                     <el-input v-model="param.id" placeholder="输入组件ID" clearable></el-input>
                 </el-form-item>
                 <el-form-item label="组件名称">
-                    <el-input v-model="param.name" placeholder="输入组件ID" clearable></el-input>
+                    <el-input v-model="param.name" placeholder="输入组件名称" clearable></el-input>
                 </el-form-item>
                 <el-form-item label="组件版本">
-                    <el-input v-model="param.version" placeholder="输入组件ID" clearable></el-input>
+                    <el-input v-model="param.version" placeholder="输入组件版本" clearable></el-input>
                 </el-form-item>
                 <el-form-item label="组件状态">
-                    <el-select v-model="param.status" placeholder="输入组件ID" clearable>
+                    <el-select v-model="param.status" placeholder="选择组件状态" clearable>
                         <el-option
                             v-for="s in status"
                             :key="s.value"
@@ -51,6 +51,7 @@ export default {
         }
     },
     mounted() {
+        console.log(localStorage.getItem('user'))
         this.$request
             .post('/api/cloudplatform/DrBSCInfo')
             .set('contentType', 'application/json')

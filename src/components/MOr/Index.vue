@@ -43,7 +43,7 @@ export default {
     },
     created() {
         let r = location.href.split('mor/')
-        if (!r[1]) {
+        if (r.length === 1) {
             this.$router.replace('/mor/comppublish')
         }
     }
