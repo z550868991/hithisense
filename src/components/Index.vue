@@ -79,7 +79,7 @@ export default {
         right: 0
         padding: 0
         height: .6rem
-        z-index: 2900
+        z-index: 1000
         .header-item
             width: 100%
             color: #ffffff

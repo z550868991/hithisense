@@ -10,17 +10,31 @@
                 width="50%">
             </el-table-column>
             <el-table-column
-                prop="slaCoding"
                 label="SLA编码">
+                <template slot-scope="scope">
+                    <span v-if="!isGr">{{scope.slaCoding}}</span>
+                    <el-input v-else v-model="scope.slaCoding" placeholder="输入SLA编码"></el-input>
+                </template>
             </el-table-column>
             <el-table-column
-                prop="slaContent"
                 label="SLA内容">
+                <template slot-scope="scope">
+                    <span v-if="!isGr">{{scope.slaContent}}</span>
+                    <el-input v-else v-model="scope.slaContent" placeholder="输入SLA内容"></el-input>
+                </template>
             </el-table-column>
             <el-table-column
+                v-if="!isGr"
                 label="价格">
                 <template slot-scope="scope">
-                    <el-input v-model="scope.row.slaPrice"></el-input>
+                    <el-input v-model="scope.row.slaPrice" placeholder="输入价格"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column
+                v-else
+                label="操作">
+                <template slot-scope="scope">
+                    <el-button type="text" @click="deleteSla(scope.$index)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -32,6 +46,13 @@ export default {
         slaList: {
             type: Array,
             required: true
+        },
+        isGr: {
+            type: Boolean,
+            default: false
+        },
+        sla: {
+            type: Number
         }
     },
     data() {
@@ -41,6 +62,9 @@ export default {
     methods: {
         goForDetail(row, event) {
             this.$router.push()
+        },
+        deleteSla(index) {
+            this.$emit('deleteSla', this.sla, index)
         }
     }
 }
