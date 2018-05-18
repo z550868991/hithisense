@@ -27,11 +27,12 @@
                 v-if="!isGr"
                 label="价格">
                 <template slot-scope="scope">
-                    <el-input v-model="scope.row.slaPrice" placeholder="输入价格"></el-input>
+                    <span v-if="isAccountDetail">{{scope.row.slaPrice}}</span>
+                    <el-input v-else v-model="scope.row.slaPrice" placeholder="输入价格"></el-input>
                 </template>
             </el-table-column>
             <el-table-column
-                v-else
+                v-if="isGr&&!isAccountDetail"
                 label="操作">
                 <template slot-scope="scope">
                     <el-button type="text" @click="deleteSla(scope.$index)">删除</el-button>
@@ -53,6 +54,10 @@ export default {
         },
         sla: {
             type: Number
+        },
+        isAccountDetail: {
+            type: Boolean,
+            default: false
         }
     },
     data() {

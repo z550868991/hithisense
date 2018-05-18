@@ -50,7 +50,8 @@
                 v-if="isOrder&&!isGr"
                 label="产品价格">
                 <template slot-scope="scope">
-                    <el-input v-model="scope.row.pdtPrice"></el-input>
+                    <span v-if="isAccountDetail">{{scope.row.pdtPrice}}</span>
+                    <el-input v-else v-model="scope.row.pdtPrice"></el-input>
                 </template>
             </el-table-column>
             <el-table-column
@@ -75,6 +76,10 @@ export default {
             default: false
         },
         isGr: {
+            type: Boolean,
+            default: false
+        },
+        isAccountDetail: {
             type: Boolean,
             default: false
         }
