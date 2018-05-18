@@ -140,7 +140,7 @@ export default {
         addSla(list) {
             list.push({
                 slaCoding: '',
-                slaContent: '',
+                slaContent: ''
             })
         }
     }

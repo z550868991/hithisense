@@ -171,21 +171,21 @@
                         class="comp-config"
                         :model="compConfig">
                         <el-form-item label="环境类型">
-                            <el-radio-group v-model="compConfig.env">
+                            <el-radio-group v-model="compConfig.profileType">
                                 <el-radio label="online">线上</el-radio>
                                 <el-radio label="dev">开发</el-radio>
                                 <el-radio label="test">测试</el-radio>
                             </el-radio-group>
                         </el-form-item>
                         <el-form-item label="是否为当前运行版本">
-                            <el-radio-group v-model="compConfig.isCurrent">
-                                <el-radio :label="0">是</el-radio>
-                                <el-radio :label="1">否</el-radio>
+                            <el-radio-group v-model="compConfig.isRunning">
+                                <el-radio :label="1">是</el-radio>
+                                <el-radio :label="0">否</el-radio>
                             </el-radio-group>
                         </el-form-item>
                         <el-form-item label="发布描述信息">
                             <el-input
-                                v-model="compConfig.infor"
+                                v-model="compConfig.desc"
                                 type="textarea"
                                 autosize></el-input>
                         </el-form-item>
@@ -197,32 +197,32 @@
                     </template>
                     <el-form
                         v-for="modelConfig in modelConfigs"
-                        :key="modelConfig.modelId"
+                        :key="modelConfig.dmID"
                         class="model-config"
                         :model="modelConfig"
                         :inline="true">
                         <el-form-item label="模型ID">
-                            <span>{{modelConfig.modelId}}</span>
+                            <span>{{modelConfig.dmID}}</span>
                         </el-form-item>
-                        <el-form-item label="组件版本">
-                            <span>{{modelConfig.modelVersion}}</span>
+                        <el-form-item label="模型版本">
+                            <span>{{modelConfig.dmVersion}}</span>
                         </el-form-item>
                         <el-form-item label="环境类型">
-                            <el-radio-group v-model="modelConfig.env">
+                            <el-radio-group v-model="modelConfig.profileType">
                                 <el-radio label="online">线上</el-radio>
                                 <el-radio label="dev">开发</el-radio>
                                 <el-radio label="test">测试</el-radio>
                             </el-radio-group>
                         </el-form-item>
                         <el-form-item label="是否为当前运行版本">
-                            <el-radio-group v-model="modelConfig.isCurrent">
-                                <el-radio :label="0">是</el-radio>
-                                <el-radio :label="1">否</el-radio>
+                            <el-radio-group v-model="modelConfig.isRunning">
+                                <el-radio label="1">是</el-radio>
+                                <el-radio label="0">否</el-radio>
                             </el-radio-group>
                         </el-form-item>
                         <el-form-item label="发布信息描述">
                             <el-input
-                                v-model="modelConfig.infor"
+                                v-model="modelConfig.desc"
                                 type="textarea"
                                 autosize></el-input>
                         </el-form-item>
@@ -232,7 +232,7 @@
         </div>
         <div class="content-footer">
             <el-button v-if="!publish" type="primary" @click="submit">发布</el-button>
-            <el-button v-else type="primary" @click="publish">确认发布</el-button>
+            <el-button v-else type="primary" @click="saveDeploy">确认发布</el-button>
         </div>
     </div>
 </template>
@@ -279,17 +279,18 @@ export default {
             },
             dataModel: [],
             compConfig: {
-                env: '',
-                isCurrent: 0,
-                infor: ''
+                bscID: '',
+                bscVersion: '',
+                preVersionID: '',
+                profileType: 'online',
+                desc: '',
+                isRunning: 1,
+                createdBy: '',
+                gmtCreate: '',
+                modifiedBy: '',
+                gmtModeified: ''
             },
-            modelConfigs: [{
-                modelId: '',
-                modelVersion: '',
-                env: 'online',
-                isCurrent: 0,
-                infor: ''
-            }],
+            modelConfigs: [],
             newService: {
                 serviceId: '',
                 serviceName: '',
@@ -409,6 +410,42 @@ export default {
         formatTime,
         submit() {
             this.publish = true
+            this.$request
+                .post('/api/cloudplatform/deployDmIdAndVersion')
+                .set('contentType', 'application/json')
+                .send({
+                    id: this.id,
+                    version: this.version
+                })
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        this.modelConfigs = res.body
+                    }
+                })
+        },
+        saveDeploy() {
+            this.$request
+                .post('/api/cloudplatform/deployBSCandDm')
+                .set('contentType', 'application/json')
+                .send({
+                    ...this.compConfig,
+                    dmReleaseEntity: this.modelConfigs
+                })
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        this.$message('组件发布成功！')
+                    }
+                })
         },
         deleteService(index) {
             this.services.splice(index, 1)
