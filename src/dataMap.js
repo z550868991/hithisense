@@ -31,7 +31,7 @@ export const pdtStatusEnum = [
     },
     {
         value: '2',
-        label: '已上架'
+        label: '已下架'
     },
     {
         value: '3',

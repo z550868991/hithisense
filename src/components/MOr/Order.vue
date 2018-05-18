@@ -14,7 +14,7 @@
                 <el-button type="primary">搜索</el-button>
             </el-form>
         </div>
-        <og-order-list :orders="orders"></og-order-list>
+        <og-order-list :orders="orders" :isMOr="true"></og-order-list>
     </div>
 </template>
 <script>

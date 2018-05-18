@@ -54,6 +54,10 @@ export default {
         isAccountDetail: {
             type: Boolean,
             default: false
+        },
+        isMOr: {
+          type: Boolean,
+          default: false
         }
     },
     data() {
@@ -64,6 +68,9 @@ export default {
             let url = `orderdetail?id=${row.orderId}`
             if (this.isAccountDetail) {
                 url += `&isAccountDetail=1`
+            }
+            if (this.isMOr) {
+                url += '&isMOr=1'
             }
             this.$router.push(url)
         }

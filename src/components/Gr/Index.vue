@@ -18,7 +18,7 @@
                 <el-button type="primary">搜索</el-button>
             </el-form>
         </div>
-        <prod-list-infor :prodList="prodList" :isGr="true"></prod-list-infor>
+        <prod-list-infor :prodList="prodList" :isGr="true" @addOrder="addOrder"></prod-list-infor>
         <el-button class="submit" type="primary" @click="goForDetail">订购</el-button>
     </div>
 </template>
@@ -37,13 +37,38 @@ export default {
                 pdtType: '',
                 pdtVersion: ''
             },
-            prodList: []
+            prodList: [],
+            selection: []
         }
     },
     methods: {
         goForDetail() {
+            if (!this.selection.length) {
+                this.$message({
+                    type: 'warning',
+                    message: '至少选择一条数据'
+                })
+                return
+            }
             this.$router.push(`/orderdetail?isGr=1`)
+        },
+        addOrder(selection) {
+            this.selection = selection
         }
+    },
+    created() {
+        this.$request
+            .get('/api/cloudplatform/GrpdtInfo')
+            .end((err, res) => {
+                if (!!err) {
+                    this.$message({
+                        type: 'error',
+                        message: err.response.text
+                    })
+                } else {
+                    this.prodList = res.body
+                }
+            })
     }
 }
 </script>

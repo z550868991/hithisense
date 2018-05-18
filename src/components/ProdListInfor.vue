@@ -3,7 +3,7 @@
         <el-table
             :data="prodList"
             border
-            @row-dbclick="goForDetail"
+            @row-dblclick="goForDetail"
             @selection-change="handleSelectionChange">
             <el-table-column
                 v-if="isGr&!isOrder"
@@ -93,7 +93,7 @@ export default {
             this.$router.push(`/prodDetail?id=${row.pdtId}&version=${row.pdtVersion}`)
         },
         handleSelectionChange(selection) {
-            console.log(selection)
+            this.$emit('addOrder', selection)
         },
         deletePro(index) {
             this.$emit('deletePro', index)

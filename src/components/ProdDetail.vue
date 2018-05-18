@@ -82,7 +82,7 @@
 <script>
 import ComponentInfor from '@/components/ComponentInfor'
 import {prodTypeEnum, pdtStatusEnum} from '@/dataMap'
-import {query} from '@/utils'
+import {query, uuid} from '@/utils'
 
 export default {
     components: {
@@ -94,7 +94,7 @@ export default {
             pdtStatusEnum,
             activeNames: ['1'],
             baseInfor: {
-                pdtId: '（暂无）',
+                pdtId: '',
                 pdtName: '',
                 pdtType: '01',
                 pdtIcon: '',
@@ -160,19 +160,57 @@ export default {
         let param = query(location.href.split('?')[1])
         if (!!param.id) {
             this.baseInfor.pdtId = param.id
+            this.baseInfor.pdtVersion = param.version
+            this.$request
+                .post('/api/cloudplatform/selectpdtInfo-baseInfo')
+                .set('contentType', 'application/json')
+                .send({
+                    id: param.id,
+                    version: param.version
+                })
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        this.baseInfor = res.body
+                    }
+                })
+            this.$request
+                .post('/api/cloudplatform/selectpdtInfo-BSCs')
+                .set('contentType', 'application/json')
+                .send({
+                    id: param.id,
+                    version: param.version
+                })
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        this.compList = res.body || []
+                    }
+                })
+        } else {
+            let newPdtUUId = 'P' + uuid()
+            this.baseInfor.pdtId = newPdtUUId
+            this.$request
+                .get('/api/cloudplatform/getPdtSelectBSCs')
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        this.compList = res.body || []
+                    }
+                })
         }
-        this.$request
-            .get('/api/cloudplatform/getPdtSelectBSCs')
-            .end((err, res) => {
-                if (!!err) {
-                    this.$message({
-                        type: 'error',
-                        message: err.response.text
-                    })
-                } else {
-                    this.compList = res.body
-                }
-            })
     }
 }
 </script>

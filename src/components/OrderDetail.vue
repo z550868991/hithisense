@@ -59,11 +59,11 @@
                             :model="approveInfor"
                             label-width="1rem">
                             <el-form-item label="审核人">
-                                <span v-if="isAccountDetail">{{approveInfor.approver}}</span>
+                                <span v-if="!MOr">{{approveInfor.approver}}</span>
                                 <el-input v-else v-model="approveInfor.approver" placeholder="输入审核人"></el-input>
                             </el-form-item>
                             <el-form-item label="审核意见">
-                                <span v-if="isAccountDetail">{{approveInfor.approveDesc}}</span>
+                                <span v-if="!MOr">{{approveInfor.approveDesc}}</span>
                                 <el-input
                                     v-else
                                     v-model="approveInfor.approveDesc"
@@ -123,12 +123,14 @@ export default {
             },
             acountMoney: 0,
             isGr: false,
+            isMOr: false,
             isAccountDetail: false
         }
     },
     created() {
         let param = query(location.href.split('?')[1])
         this.isAccountDetail = !!param.isAccountDetail
+        this.isMOr = !!param.isMOr
         if (!!param.isGr) {
             let id = uuid()
             this.isGr = true
