@@ -156,7 +156,7 @@
                         <p class="title">数据模型</p>
                     </template>
                     <div class="data-model">
-                        <component-infor :infor="dataModel"></component-infor>
+                        <data-model-infor :dataModelList="dataModel"></data-model-infor>
                     </div>
                 </el-collapse-item>
             </el-collapse>
@@ -239,10 +239,12 @@
 <script>
 import {query, formatDate, formatTime, uuid} from '@/utils'
 import ComponentInfor from '@/components/ComponentInfor'
+import DataModelInfor from '@/components/DataModelInfor'
 
 export default {
     components: {
-        ComponentInfor
+        ComponentInfor,
+        DataModelInfor
     },
     data() {
         return {

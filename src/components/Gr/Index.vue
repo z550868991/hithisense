@@ -18,10 +18,17 @@
                 <el-button type="primary">搜索</el-button>
             </el-form>
         </div>
+        <prod-list-infor :prodList="prodList" :isGr="true"></prod-list-infor>
+        <el-button class="submit" type="primary" @click="goForDetail">订购</el-button>
     </div>
 </template>
 <script>
+import ProdListInfor from '@/components/ProdListInfor'
+
 export default {
+    components: {
+        ProdListInfor
+    },
     data() {
         return {
             param: {
@@ -29,7 +36,13 @@ export default {
                 pdtName: '',
                 pdtType: '',
                 pdtVersion: ''
-            }
+            },
+            prodList: []
+        }
+    },
+    methods: {
+        goForDetail() {
+            this.$router.push(`/orderdetail?isGr=1`)
         }
     }
 }
@@ -44,4 +57,6 @@ export default {
         text-align: left
         .el-form-item
             width: 20%
+    .submit
+        margin-top: .15rem
 </style>
