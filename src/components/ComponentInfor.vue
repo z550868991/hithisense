@@ -56,6 +56,10 @@ export default {
         selectable: {
             type: Boolean,
             default: false
+        },
+        isDr: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -64,7 +68,11 @@ export default {
     methods: {
         formatDate,
         goForDetail(row, event) {
-            this.$router.push(`/detail?id=${row.bscID}&version=${row.version}`)
+            let url = `/detail?id=${row.bscID}&version=${row.version}`
+            if (this.isDr) {
+                url += `&isDr=1`
+            }
+            this.$router.push(url)
         },
         selectChange(selection) {
             this.$emit('addPdt', selection)
