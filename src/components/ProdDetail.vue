@@ -31,7 +31,9 @@
                             <el-input v-model="baseInfor.pdtVersion" placeholder="输入产品版本号"></el-input>
                         </el-form-item>
                         <el-form-item label="产品状态">
-                            <el-input v-model="baseInfor.pdtStatus" placeholder="输入产品状态"></el-input>
+                            <el-radio-group v-model="baseInfor.pdtStatus">
+                                <el-radio v-for="st in pdtStatusEnum" :label="st.value" :key="st.value">{{st.label}}</el-radio>
+                            </el-radio-group>
                         </el-form-item>
                         <el-form-item label="运营团队ID">
                             <el-input v-model="baseInfor.busoprTeamId" placeholder="输入运营团队ID"></el-input>
@@ -72,14 +74,14 @@
                 </el-collapse-item>
             </el-collapse>
             <div class="content-footer">
-                <el-button type="primary">保存</el-button>
+                <el-button type="primary" @click="savePdt">保存</el-button>
             </div>
         </div>
     </div>
 </template>
 <script>
 import ComponentInfor from '@/components/ComponentInfor'
-import {prodTypeEnum} from '@/dataMap'
+import {prodTypeEnum, pdtStatusEnum} from '@/dataMap'
 import {query} from '@/utils'
 
 export default {
@@ -89,14 +91,16 @@ export default {
     data() {
         return {
             prodTypeEnum,
+            pdtStatusEnum,
             activeNames: ['1'],
             baseInfor: {
-                pdtId: '',
+                pdtId: '（暂无）',
                 pdtName: '',
-                pdtType: '',
+                pdtType: '01',
                 pdtIcon: '',
                 pdtVersion: '',
-                pdtStatus: '',
+                bizServiceIDs: '',
+                pdtStatus: '0',
                 busoprTeamId: '',
                 pdtDesc: '',
                 pdtFunc: '',
@@ -105,9 +109,51 @@ export default {
                 pdtMan: '',
                 pdtQuestion: '',
                 serviceProtocol: '',
-                createdBy: ''
+                createdBy: '',
+                createdTime: '',
+                lastModifiedBy: '',
+                lastModifiedTime: ''
             },
             compList: []
+        }
+    },
+    methods: {
+        savePdt() {
+            this.$request
+                .post('/api/cloudplatform/MOrpdtEdit-baseInfo')
+                .set('contentType', 'application/json')
+                .send(this.baseInfor)
+                .end((err) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    }
+                })
+            let result = this.compList.map(item => {
+                return {
+                    id: item.bscID,
+                    version: item.version
+                }
+            })
+            result.unshift({
+                id: this.baseInfor.pdtId,
+                version: this.baseInfor.pdtVersion
+            })
+            this.$request
+                .post('/api/cloudplatform/MOrpdtEdit-selectBSCs')
+                .set('contentType', 'application/json')
+                .send(result)
+                .end((err) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    }
+                })
+            this.$message('保存成功！')
         }
     },
     created() {
@@ -115,6 +161,18 @@ export default {
         if (!!param.id) {
             this.baseInfor.pdtId = param.id
         }
+        this.$request
+            .get('/api/cloudplatform/getPdtSelectBSCs')
+            .end((err, res) => {
+                if (!!err) {
+                    this.$message({
+                        type: 'error',
+                        message: err.response.text
+                    })
+                } else {
+                    this.compList = res.body
+                }
+            })
     }
 }
 </script>

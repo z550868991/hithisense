@@ -19,3 +19,22 @@ export const prodTypeEnum = [
         label: '人工服务'
     }
 ]
+
+export const pdtStatusEnum = [
+    {
+        value: '0',
+        label: '待上架'
+    },
+    {
+        value: '1',
+        label: '已上架'
+    },
+    {
+        value: '2',
+        label: '已上架'
+    },
+    {
+        value: '3',
+        label: '停用'
+    }
+]

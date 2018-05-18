@@ -75,7 +75,7 @@ export default {
             this.$router.push(url)
         },
         selectChange(selection) {
-            console.log(selection)
+            this.$emit('addPdt', selection)
         }
     }
 }
