@@ -34,18 +34,21 @@
                     </template>
                     <div class="interface">
                         <span class="label">组件统一访问接口：</span>
-                        <el-input v-model="baseInfor.url"></el-input>
+                        <span v-if="!isDr" class="baseInfor.url"></span>
+                        <el-input v-else v-model="baseInfor.url" placeholder="输入组件统一访问接口"></el-input>
                     </div>
                     <div class="interface">
                         <span class="label">组件描述：</span>
+                        <span v-if="!isDr">{{baseInfor.description}}</span>
                         <el-input
+                            v-else
                             type="textarea"
                             :autosize="{ minRows: 2}"
                             placeholder="请输入内容"
                             v-model="baseInfor.description">
                         </el-input>
                     </div>
-                    <el-button type="primary" size="mini" @click="saveDesc">保存配置</el-button>
+                    <el-button v-if="isDr" type="primary" size="mini" @click="saveDesc">保存配置</el-button>
                 </el-collapse-item>
                 <el-collapse-item name="3">
                     <template slot="title">
@@ -62,44 +65,54 @@
                                     <span>{{service.serviceId}}</span>
                                 </el-form-item>
                                 <el-form-item label="服务名称">
-                                    <el-input v-model="service.serviceName" size="mini"></el-input>
+                                    <span v-if="!isDr">{{service.serviceName}}</span>
+                                    <el-input v-else v-model="service.serviceName" size="mini"></el-input>
                                 </el-form-item>
                                 <el-form-item label="服务类型">
-                                    <el-input v-model="service.serviceType" size="mini"></el-input>
+                                    <span v-if="!isDr">{{service.serviceType}}</span>
+                                    <el-input v-else v-model="service.serviceType" size="mini"></el-input>
                                 </el-form-item>
                                 <el-form-item label="服务访问路径">
-                                    <el-input v-model="service.servicePath" size="mini"></el-input>
+                                    <span v-if="!isDr">{{service.servicePath}}</span>
+                                    <el-input v-else v-model="service.servicePath" size="mini"></el-input>
                                 </el-form-item>
                                 <el-form-item label="服务访问参数">
-                                    <el-input v-model="service.serviceParam" size="mini"></el-input>
+                                    <span v-if="!isDr">{{service.serviceParam}}</span>
+                                    <el-input v-else v-model="service.serviceParam" size="mini"></el-input>
                                 </el-form-item>
                                 <el-form-item label="是否对外开放">
-                                    <el-checkbox v-model="service.serviceOpen"></el-checkbox>
+                                    <span v-if="!isDr">{{service.serviceOpen}}</span>
+                                    <el-checkbox v-else v-model="service.serviceOpen"></el-checkbox>
                                 </el-form-item>
                                 <el-form-item label="是否加密">
-                                    <el-checkbox v-model="service.serviceSecurity"></el-checkbox>
+                                    <span v-if="!isDr">{{service.serviceSecurity}}</span>
+                                    <el-checkbox v-else v-model="service.serviceSecurity"></el-checkbox>
                                 </el-form-item>
                                 <el-form-item label="加密方法">
-                                    <el-input v-model="service.serviceMethod" size="mini"></el-input>
+                                    <span v-if="!isDr">{{service.serviceMethod}}</span>
+                                    <el-input v-else v-model="service.serviceMethod" size="mini"></el-input>
                                 </el-form-item>
                                 <el-form-item label="密钥">
-                                    <el-input v-model="service.serviceKey" size="mini"></el-input>
+                                    <span v-if="!isDr">{{service.serviceKey}}</span>
+                                    <el-input v-else v-model="service.serviceKey" size="mini"></el-input>
                                 </el-form-item>
                                 <el-form-item label="返回数据格式类型">
-                                    <el-input v-model="service.serviceReturnvaluetype" size="mini"></el-input>
+                                    <span v-if="!isDr">{{service.serviceReturnvaluetype}}</span>
+                                    <el-input v-else v-model="service.serviceReturnvaluetype" size="mini"></el-input>
                                 </el-form-item>
                                 <el-form-item label="返回数据格式：">
-                                    <el-input v-model="service.serviceFormat" size="mini"></el-input>
+                                    <span v-if="!isDr">{{service.serviceFormat}}</span>
+                                    <el-input v-else v-model="service.serviceFormat" size="mini"></el-input>
                                 </el-form-item>
                             </el-form>
-                            <div class="service-delete operate" @click="deleteService(index)">
+                            <div v-if="isDr" class="service-delete operate" @click="deleteService(index)">
                                 删除
                             </div>
                         </div>
-                        <div style="text-align: left">
+                        <div v-if="isDr" style="text-align: left">
                             <el-button type="primary" size="mini" @click="handleAddService">添加</el-button>
                         </div>
-                        <el-button type="primary" @click="saveService">保存配置</el-button>
+                        <el-button v-if="isDr" type="primary" @click="saveService">保存配置</el-button>
                     </div>
                 </el-collapse-item>
                 <el-collapse-item name="4">
@@ -119,20 +132,22 @@
                             :key="index">
                             <el-form class="dep-content" :model="dep" label-width=".8rem" :inline="true">
                                 <el-form-item label="组件ID">
-                                    <el-input v-model="dep.id"></el-input>
+                                    <span v-if="!isDr">{{dep.id}}</span>
+                                    <el-input v-else v-model="dep.id"></el-input>
                                 </el-form-item>
                                 <el-form-item label="组件版本">
-                                    <el-input v-model="dep.version"></el-input>
+                                    <span v-if="!isDr">{{dep.version}}</span>
+                                    <el-input v-else v-model="dep.version"></el-input>
                                 </el-form-item>
                             </el-form>
-                            <div class="dep-delete operate" @click="deleteDep(index)">
+                            <div v-if="isDr" class="dep-delete operate" @click="deleteDep(index)">
                                 删除
                             </div>
                         </div>
-                        <div class="add-wrapper">
+                        <div  v-if="isDr" class="add-wrapper">
                             <el-button type="primary" size="mini" @click="addDep">添加</el-button>
                         </div>
-                        <el-button type="primary" size="mini" @click="saveRel">保存配置</el-button>
+                        <el-button v-if="isDr" type="primary" size="mini" @click="saveRel">保存配置</el-button>
                     </div>
                 </el-collapse-item>
                 <el-collapse-item name="6">
@@ -142,13 +157,15 @@
                     <div class="database-source">
                         <el-form :model="database" label-width="1rem" :inline="true">
                             <el-form-item label="数据库名称">
-                                <el-input v-model="database.dbName"></el-input>
+                                <span v-if="!isDr">{{database.dbName}}</span>
+                                <el-input v-else v-model="database.dbName" placeholder="输入数据库名称"></el-input>
                             </el-form-item>
                             <el-form-item label="数据库版本">
-                                <el-input v-model="database.dbVersionId"></el-input>
+                                <span v-if="!isDr">{{database.dbVersionId}}</span>
+                                <el-input v-else v-model="database.dbVersionId" placeholder="输入数据库版本"></el-input>
                             </el-form-item>
                         </el-form>
-                        <el-button type="primary" size="mini" @click="saveDs">保存配置</el-button>
+                        <el-button v-if="isDr" type="primary" size="mini" @click="saveDs">保存配置</el-button>
                     </div>
                 </el-collapse-item>
                 <el-collapse-item name="7">
@@ -309,13 +326,15 @@ export default {
                 version: ''
             },
             publish: false,
-            showAddService: false
+            showAddService: false,
+            isDr: false
         }
     },
     created() {
         let param = query(location.href.split('?')[1])
         this.id = param.id || ''
         this.version = param.version || ''
+        this.isDr = !!param.isDr
         this.$request
             .post('/api/cloudplatform/selectDrBSCInfo-Main')
             .set('contentType', 'application/json')

@@ -24,7 +24,7 @@
                 <el-button type="primary">查询</el-button>
             </el-form>
         </div>
-        <component-infor :infor="infor"></component-infor>
+        <component-infor :infor="infor" :isDr="true"></component-infor>
     </div>
 </template>
 <script>
