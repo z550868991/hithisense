@@ -67,7 +67,7 @@ export default {
             this.$router.push(`/detail?id=${row.bscID}&version=${row.version}`)
         },
         selectChange(selection) {
-            console.log(selection)
+            this.$emit('addPdt', selection)
         }
     }
 }

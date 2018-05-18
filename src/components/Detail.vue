@@ -279,9 +279,7 @@ export default {
             },
             dataModel: [],
             compConfig: {
-                bscID: '',
-                bscVersion: '',
-                preVersionID: '',
+                preVersionID: '0',
                 profileType: 'online',
                 desc: '',
                 isRunning: 1,
@@ -434,9 +432,11 @@ export default {
                 .set('contentType', 'application/json')
                 .send({
                     ...this.compConfig,
-                    dmReleaseEntity: this.modelConfigs
+                    dmReleaseEntity: this.modelConfigs,
+                    bscID: this.id,
+                    bscVersion: this.version
                 })
-                .end((err, res) => {
+                .end((err) => {
                     if (!!err) {
                         this.$message({
                             type: 'error',
@@ -460,7 +460,7 @@ export default {
                     url: this.baseInfor.url,
                     desc: this.baseInfor.description
                 })
-                .end((err, res) => {
+                .end((err) => {
                     if (!!err) {
                         this.$message({
                             type: 'error',
@@ -484,7 +484,7 @@ export default {
                 .post('/api/cloudplatform/submitDrBSCInfo-Service')
                 .set('contentType', 'application/json')
                 .send(result)
-                .end((err, res) => {
+                .end((err) => {
                     if (!!err) {
                         this.$message({
                             type: 'error',
@@ -505,7 +505,7 @@ export default {
                 .post('/api/cloudplatform/submitDrBSCInfo-Rel')
                 .set('contentType', 'application/json')
                 .send(result)
-                .end((err, res) => {
+                .end((err) => {
                     if (!!err) {
                         this.$message({
                             type: 'error',
@@ -521,7 +521,7 @@ export default {
                   .post('/api/cloudplatform/submitDrBSCInfo-Ds')
                   .set('contentType', 'application/json')
                   .send(this.database)
-                  .end((err, res) => {
+                  .end((err) => {
                       if (!!err) {
                           this.$message({
                               type: 'error',

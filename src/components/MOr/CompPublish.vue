@@ -17,7 +17,7 @@
         <div class="add-wrapper">
             <el-button type="primary" size="mini" @click="goForAdd">添加产品</el-button>
         </div>
-        <component-infor :infor="infor" :selectable="true"></component-infor>
+        <component-infor :infor="infor" :selectable="true" @addPdt="addPdt"></component-infor>
     </div>
 </template>
 <script>
@@ -36,12 +36,41 @@ export default {
                 version: '',
                 status: ''
             },
-            infor: []
+            infor: [],
+            selection: []
         }
     },
     methods: {
         goForAdd() {
+            if (!this.selection.length) {
+                this.$message({
+                    type: 'warning',
+                    message: '至少选择一条数据'
+                })
+                return
+            }
+            let result = this.selection.map(item => {
+                return {
+                    id: item.bscID,
+                    version: item.version
+                }
+            })
+            this.$request
+                .post('/api/cloudplatform/savePdtSelectBSCs')
+                .set('contentType', 'application/json')
+                .send(result)
+                .end((err) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    }
+                })
             this.$router.push('/prodDetail')
+        },
+        addPdt(selection) {
+            this.selection = selection
         }
     },
     created() {
