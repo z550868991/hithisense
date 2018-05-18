@@ -45,7 +45,18 @@ export default {
         }
     },
     created() {
-
+        this.$request
+            .get('/api/cloudplatform/MOrBSCInfo')
+            .end((err, res) => {
+                if (!!err) {
+                    this.$message({
+                        type: 'error',
+                        message: err.response.text
+                    })
+                } else {
+                    this.infor = res.body
+                }
+            })
     }
 }
 </script>

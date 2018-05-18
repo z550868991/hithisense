@@ -11,36 +11,36 @@
                 width="50%">
             </el-table-column>
             <el-table-column
-                prop="modelID"
+                prop="dmID"
                 label="模型ID">
             </el-table-column>
             <el-table-column
-                prop="modelName"
+                prop="dmName"
                 label="模型名称">
             </el-table-column>
             <el-table-column
-                prop="chartName"
+                prop="tableName"
                 label="表名">
             </el-table-column>
             <el-table-column
-                prop="type"
+                prop="dmType"
                 label="类型">
             </el-table-column>
             <el-table-column
-                prop="version"
+                prop="dmVersion"
                 label="版本">
             </el-table-column>
             <el-table-column
-                prop="desc"
+                prop="dmDesc"
                 label="描述">
             </el-table-column>
             <el-table-column
-                prop="createTime"
+                prop="gmtCreate"
                 label="创建时间">
             </el-table-column>
             <el-table-column
-                prop="modifiedTime"
-                label="描述">
+                prop="gmtModified"
+                label="修改时间">
             </el-table-column>
         </el-table>
     </div>
