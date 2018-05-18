@@ -15,6 +15,7 @@
                 label="iSC ID">
             </el-table-column>
             <el-table-column
+                v-if="!isAccountDetail"
                 prop="ogId"
                 label="组织ID">
             </el-table-column>
@@ -39,6 +40,10 @@ export default {
         iscList: {
             type: Array,
             required: true
+        },
+        isAccountDetail: {
+            type: Boolean,
+            default: false
         }
     },
     data() {

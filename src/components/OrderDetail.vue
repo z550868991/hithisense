@@ -31,7 +31,7 @@
                         <p class="title">订购明细</p>
                     </template>
                     <div class="prod-wrapper">
-                        <prod-list-infor :prodList="prodList" :isOrder="true" :isGr="isGr" @deletePro="deletePro"></prod-list-infor>
+                        <prod-list-infor :prodList="prodList" :isOrder="true" :isAccountDetail="isAccountDetail" :isGr="isGr" @deletePro="deletePro"></prod-list-infor>
                     </div>
                 </el-collapse-item>
                 <el-collapse-item name="3">
@@ -43,7 +43,7 @@
                             <span>产品ID： {{sla.prodId}}</span>
                             <span>产品版本： {{sla.prodVersion}}</span>
                         </div>
-                        <sla-list-infor class="sla-list-infor" :slaList="sla.slaList" :isGr="isGr" @deleteSla="deleteSla" :sla="index"></sla-list-infor>
+                        <sla-list-infor class="sla-list-infor" :slaList="sla.slaList" :isGr="isGr" @deleteSla="deleteSla" :sla="index" :isAccountDetail="isAccountDetail"></sla-list-infor>
                         <div class="add-wrapper">
                             <el-button v-if="isGr" type="primary" size="mini" @click="addSla(sla.slaList)">添加</el-button>
                         </div>
@@ -59,10 +59,13 @@
                             :model="approveInfor"
                             label-width="1rem">
                             <el-form-item label="审核人">
-                                <el-input v-model="approveInfor.approver" placeholder="输入审核人"></el-input>
+                                <span v-if="isAccountDetail">{{approveInfor.approver}}</span>
+                                <el-input v-else v-model="approveInfor.approver" placeholder="输入审核人"></el-input>
                             </el-form-item>
                             <el-form-item label="审核意见">
+                                <span v-if="isAccountDetail">{{approveInfor.approveDesc}}</span>
                                 <el-input
+                                    v-else
                                     v-model="approveInfor.approveDesc"
                                     type="textarea"
                                     placeholder="输入审核意见"
@@ -77,7 +80,11 @@
                 </el-collapse-item>
             </el-collapse>
             <div class="content-footer">
-                <el-button type="primary">部署iSC</el-button>
+                <div v-if="isAccountDetail" class="acount">
+                    <span class="price">合计：{{acountMoney}}</span>
+                    <el-button type="primary">结算</el-button>
+                </div>
+                <el-button v-else type="primary">部署iSC</el-button>
             </div>
         </div>
     </div>
@@ -114,11 +121,14 @@ export default {
                 approveDesc: '',
                 approveDate: ''
             },
-            isGr: false
+            acountMoney: 0,
+            isGr: false,
+            isAccountDetail: false
         }
     },
     created() {
         let param = query(location.href.split('?')[1])
+        this.isAccountDetail = !!param.isAccountDetail
         if (!!param.isGr) {
             let id = uuid()
             this.isGr = true
@@ -127,7 +137,25 @@ export default {
             if (!!param.id) {
                 this.baseInfor.orderId = param.id
             }
-            this.approveInfor.approveDate = formatDate(Date.now())
+            if (!this.isAccountDetail) {
+                this.approveInfor.approveDate = formatDate(Date.now())
+            }
+        }
+    },
+    mounted() {
+        let acountMoney = 0
+        // 如果是订单详情2，这里写请求动作
+        if (this.isAccountDetail) {
+            // 动作
+            this.prodList.forEach((pdt) => {
+                acountMoney += pdt.pdtPrice
+            })
+            this.slas.forEach((sla) => {
+                sla.slaList.forEach((item) => {
+                    acountMoney += item.slaPrice
+                })
+            })
+            this.acountMoney = acountMoney
         }
     },
     methods: {
@@ -140,7 +168,7 @@ export default {
         addSla(list) {
             list.push({
                 slaCoding: '',
-                slaContent: '',
+                slaContent: ''
             })
         }
     }
@@ -194,4 +222,9 @@ export default {
         text-align: center
         background: rgba(0, 0, 0, .1)
         z-index: 2000
+        .price
+            font-size: .2rem
+            color: #E6A23C
+            font-weight: bold
+            margin-right: 2rem
 </style>

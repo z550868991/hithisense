@@ -15,6 +15,7 @@ import Detail from '@/components/Detail'
 import ProdDetail from '@/components/ProdDetail'
 import OrderDetail from '@/components/OrderDetail'
 import IscDetail from '@/components/IscDetail'
+import AccountDetail from '@/components/Gr/AccountDetail'
 
 Vue.use(Router)
 
@@ -77,6 +78,10 @@ export default new Router({
             {
                 path: 'gr',
                 component: GrIndex
+            },
+            {
+                path: '/gr/detail',
+                component: AccountDetail
             }
         ]
     },
