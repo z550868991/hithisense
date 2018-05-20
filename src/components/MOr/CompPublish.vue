@@ -67,7 +67,7 @@ export default {
                         })
                     }
                 })
-            this.$router.push('/prodDetail')
+            this.$router.push('/prodDetail?editor=1&isMOr=1')
         },
         addPdt(selection) {
             this.selection = selection
