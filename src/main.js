@@ -18,7 +18,8 @@ const store = new Vuex.Store({
     state: {
         userInfor: {
             user: '',
-            type: ''
+            type: '',
+            account: ''
         }
     },
     mutations: {

@@ -24,8 +24,10 @@
                 label="产品名称">
             </el-table-column>
             <el-table-column
-                prop="pdtType"
                 label="产品类别">
+                <template slot-scope="scope">
+                    {{prodType[scope.row.pdtType]}}
+                </template>
             </el-table-column>
             <el-table-column
                 prop="pdtVersion"
@@ -33,8 +35,10 @@
             </el-table-column>
             <el-table-column
                 v-if="!isOrder&&!isGr"
-                prop="pdtStatus"
                 label="状态">
+                <template slot-scope="scope">
+                    {{prodStatus[scope.row.pdtStatus]}}
+                </template>
             </el-table-column>
             <el-table-column
                 v-if="!isOrder&&!isGr"
@@ -65,6 +69,7 @@
     </div>
 </template>
 <script>
+import {prodType, prodStatus} from '@/dataMap'
 export default {
     props: {
         prodList: {
@@ -86,6 +91,8 @@ export default {
     },
     data() {
         return {
+            prodType,
+            prodStatus
         }
     },
     methods: {

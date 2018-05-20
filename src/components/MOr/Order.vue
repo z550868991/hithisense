@@ -33,6 +33,20 @@ export default {
             },
             orders: []
         }
+    },
+    created() {
+        this.$request
+            .get('/api/cloudplatform/MOrorderInfo')
+            .end((err, res) => {
+                if (!!err) {
+                    this.$message({
+                        type: 'error',
+                        message: err.response.text
+                    })
+                } else {
+                    this.orders = res.body
+                }
+            })
     }
 }
 </script>

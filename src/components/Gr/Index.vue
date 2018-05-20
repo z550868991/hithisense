@@ -50,6 +50,24 @@ export default {
                 })
                 return
             }
+            let result = this.selection.map(item => {
+                return {
+                    id: item.pdtId,
+                    version: item.pdtVersion
+                }
+            })
+            this.$request
+                .post('/api/cloudplatform/saveOrderSelectPdts')
+                .set('contentType', 'application/json')
+                .send(result)
+                .end((err) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    }
+                })
             this.$router.push(`/orderdetail?isGr=1`)
         },
         addOrder(selection) {

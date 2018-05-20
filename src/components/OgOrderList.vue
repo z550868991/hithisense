@@ -4,7 +4,7 @@
             :data="orders"
             border
             style="width: 100%"
-            @row-dbclick="goForDetail">
+            @row-dblclick="goForDetail">
             <el-table-column
                 type="index"
                 label="序号"
@@ -24,27 +24,30 @@
                 label="创建人">
             </el-table-column>
             <el-table-column
-                prop="created"
+                prop="gmtCreate"
                 label="创建时间">
             </el-table-column>
             <el-table-column
-                prop="status"
                 label="状态">
+                <template slot-scope="scope">
+                    {{orderdStatus[scope.row.auditFlag]}}
+                </template>
             </el-table-column>
             <el-table-column
                 v-if="!isAccountDetail"
-                prop="approvePerson"
+                prop="checkPerson"
                 label="审核人">
             </el-table-column>
             <el-table-column
                 v-if="!isAccountDetail"
-                prop="changeTime"
+                prop="gmtModified"
                 label="修改时间">
             </el-table-column>
         </el-table>
     </div>
 </template>
 <script>
+import {orderdStatus} from '@/dataMap'
 export default {
     props: {
         orders: {
@@ -61,11 +64,13 @@ export default {
         }
     },
     data() {
-        return {}
+        return {
+            orderdStatus
+        }
     },
     methods: {
         goForDetail(row, event) {
-            let url = `orderdetail?id=${row.orderId}`
+            let url = `/orderdetail?id=${row.orderId}`
             if (this.isAccountDetail) {
                 url += `&isAccountDetail=1`
             }

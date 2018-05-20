@@ -22,7 +22,7 @@
                             <span v-else>{{baseInfor.createdBy}}</span>
                         </el-form-item>
                         <el-form-item label="订单状态">
-                            <span>{{baseInfor.orderStatus}}</span>
+                            <span>{{orderdStatus[baseInfor.auditFlag]}}</span>
                         </el-form-item>
                     </el-form>
                 </el-collapse-item>
@@ -38,14 +38,21 @@
                     <template slot="title">
                         <p class="title">质量需求</p>
                     </template>
-                    <div class="sla-wrapper" v-for="(sla, index) in slas" :key="sla.prodId">
+                    <div class="sla-wrapper" v-for="(sla, index) in slas" :key="index">
                         <div class="sla-infor">
                             <span>产品ID： {{sla.prodId}}</span>
                             <span>产品版本： {{sla.prodVersion}}</span>
                         </div>
-                        <sla-list-infor class="sla-list-infor" :slaList="sla.slaList" :isGr="isGr" @deleteSla="deleteSla" :sla="index" :isAccountDetail="isAccountDetail"></sla-list-infor>
+                        <sla-list-infor
+                                        ref="slalistinfor"
+                                        class="sla-list-infor"
+                                        :slaList="sla.slaList"
+                                        :isGr="isGr"
+                                        @deleteSla="deleteSla"
+                                        :sla="index"
+                                        :isAccountDetail="isAccountDetail"></sla-list-infor>
                         <div class="add-wrapper">
-                            <el-button v-if="isGr" type="primary" size="mini" @click="addSla(sla.slaList)">添加</el-button>
+                            <el-button v-if="isGr" type="primary" size="mini" @click="addSla(sla)">添加</el-button>
                         </div>
                     </div>
                 </el-collapse-item>
@@ -59,11 +66,11 @@
                             :model="approveInfor"
                             label-width="1rem">
                             <el-form-item label="审核人">
-                                <span v-if="!MOr">{{approveInfor.approver}}</span>
+                                <span v-if="!isMOr">{{approveInfor.approver}}</span>
                                 <el-input v-else v-model="approveInfor.approver" placeholder="输入审核人"></el-input>
                             </el-form-item>
                             <el-form-item label="审核意见">
-                                <span v-if="!MOr">{{approveInfor.approveDesc}}</span>
+                                <span v-if="!isMOr">{{approveInfor.approveDesc}}</span>
                                 <el-input
                                     v-else
                                     v-model="approveInfor.approveDesc"
@@ -84,7 +91,8 @@
                     <span class="price">合计：{{acountMoney}}</span>
                     <el-button type="primary">结算</el-button>
                 </div>
-                <el-button v-else type="primary">部署iSC</el-button>
+                <el-button v-if="isGr" type="primary" @click="submitOrder">提交</el-button>
+                <el-button v-else type="primary" @click="deployOrder">部署iSC</el-button>
             </div>
         </div>
     </div>
@@ -92,8 +100,8 @@
 <script>
 import ProdListInfor from '@/components/ProdListInfor'
 import SlaListInfor from '@/components/SlaListInfor'
-import {prodTypeEnum} from '@/dataMap'
-import {query, formatDate, uuid} from '@/utils'
+import {prodTypeEnum, orderdStatus} from '@/dataMap'
+import {query, formatDate, formatTime, uuid} from '@/utils'
 
 export default {
     components: {
@@ -103,18 +111,25 @@ export default {
     data() {
         return {
             prodTypeEnum,
+            orderdStatus,
             activeNames: ['1'],
             baseInfor: {
                 orderId: '',
                 ogId: '',
                 createdBy: '',
-                orderStatus: ''
+                gmtCreate: '',
+                modifiedBy: '',
+                gmtModified: '',
+                checkPerson: '',
+                gmtCheck: '',
+                auditFlag: '0',
+                checkComment: ''
             },
             prodList: [],
             slas: [{
-                prodId: '1',
-                prodVersion: '111',
-                slaList: [{}]
+                prodId: '',
+                prodVersion: '',
+                slaList: []
             }],
             approveInfor: {
                 approver: '',
@@ -132,12 +147,95 @@ export default {
         this.isAccountDetail = !!param.isAccountDetail
         this.isMOr = !!param.isMOr
         if (!!param.isGr) {
-            let id = uuid()
+            let id = 'O' + uuid()
             this.isGr = true
             this.baseInfor.orderId = id
+            this.$request
+                .post('/api/cloudplatform/getGroupID')
+                .set('contentType', 'application/json')
+                .send({
+                    account: this.$store.state.userInfor.account
+                })
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        this.baseInfor.ogId = res.text
+                    }
+                })
+            this.$request
+                .get('/api/cloudplatform/getOrderSelectPdts')
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        this.prodList = res.body
+                        this.slas = res.body.map((item) => {
+                            return {
+                                prodId: item.pdtId,
+                                prodVersion: item.pdtVersion,
+                                slaList: []
+                            }
+                        })
+                    }
+                })
         } else {
             if (!!param.id) {
                 this.baseInfor.orderId = param.id
+                this.$request
+                    .post('/api/cloudplatform/selectMOrorderInfo-base')
+                    .set('contentType', 'application/json')
+                    .send({
+                        orderId: this.baseInfor.orderId
+                    })
+                    .end((err, res) => {
+                        if (!!err) {
+                            this.$message({
+                                type: 'error',
+                                message: err.response.text
+                            })
+                        } else {
+                            this.baseInfor = res.body
+                        }
+                    })
+                this.$request
+                    .post('/api/cloudplatform/selectorderInfo-pdt')
+                    .set('contentType', 'application/json')
+                    .send({
+                        orderId: this.baseInfor.orderId
+                    })
+                    .end((err, res) => {
+                        if (!!err) {
+                            this.$message({
+                                type: 'error',
+                                message: err.response.text
+                            })
+                        } else {
+                            this.prodList = res.body
+                        }
+                    })
+                this.$request
+                    .post('/api/cloudplatform/selectorderInfo-sla')
+                    .set('contentType', 'application/json')
+                    .send({
+                        orderId: this.baseInfor.orderId
+                    })
+                    .end((err, res) => {
+                        if (!!err) {
+                            this.$message({
+                                type: 'error',
+                                message: err.response.text
+                            })
+                        } else {
+                            this.slas = res.body
+                        }
+                    })
             }
             if (!this.isAccountDetail) {
                 this.approveInfor.approveDate = formatDate(Date.now())
@@ -167,11 +265,85 @@ export default {
         deleteSla(sla, index) {
             this.slas[sla].slaList.splice(index, 1)
         },
-        addSla(list) {
-            list.push({
+        addSla(sla) {
+            sla.slaList.push({
                 slaCoding: '',
                 slaContent: ''
             })
+        },
+        submitOrder() {
+            this.$request
+                .post('/api/cloudplatform/submitOrder-main')
+                .set('contentType', 'application/json')
+                .send(this.baseInfor)
+                .end((err) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    }
+                })
+            let time = Date.now()
+            let orderPdtRes = this.prodList.map(item => {
+                return {
+                    orderId: this.baseInfor.orderId,
+                    pdtId: item.pdtId,
+                    pdtVersion: item.pdtVersion,
+                    pdtPrice: '',
+                    createdBy: this.baseInfor.createdBy,
+                    gmtCreate: formatDate(time) + ' ' + formatTime(time),
+                    modifiedBy: '',
+                    gmtModified: '1000-01-01 00:00:00'
+                }
+            })
+            this.$request
+                .post('/api/cloudplatform/submitOrder-pdt')
+                .set('contentType', 'application/json')
+                .send(orderPdtRes)
+                .end((err) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    }
+                })
+            let orderSLARes = []
+            this.$refs.slalistinfor.forEach(item => {
+                item.$emit('submit')
+            })
+            this.slas.forEach(item => {
+                item.slaList.forEach(sla => {
+                    orderSLARes.push({
+                        orderId: this.baseInfor.orderId,
+                        pdtId: item.prodId,
+                        pdtVersion: item.prodVersion,
+                        slaCode: sla.slaCoding,
+                        slaContent: sla.slaContent,
+                        slaPrice: '',
+                        createdBy: this.baseInfor.createdBy,
+                        gmtCreate: formatDate(time) + ' ' + formatTime(time),
+                        modifiedBy: '',
+                        gmtModified: '1000-01-01 00:00:00'
+                    })
+                })
+            })
+            this.$request
+                .post('/api/cloudplatform/submitOrder-sla')
+                .set('contentType', 'application/json')
+                .send(orderSLARes)
+                .end((err) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    }
+                })
+        },
+        deployOrder() {
+
         }
     }
 }

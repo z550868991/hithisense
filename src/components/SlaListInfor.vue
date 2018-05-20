@@ -12,15 +12,19 @@
             <el-table-column
                 label="SLA编码">
                 <template slot-scope="scope">
-                    <span v-if="!isGr">{{scope.slaCoding}}</span>
-                    <el-input v-else v-model="scope.slaCoding" placeholder="输入SLA编码"></el-input>
+                    <span v-if="!isGr">{{scope.row.slaCoding}}</span>
+                    <el-input v-else
+                              v-model="scope.row.slaCoding"
+                              placeholder="输入SLA编码"></el-input>
                 </template>
             </el-table-column>
             <el-table-column
                 label="SLA内容">
                 <template slot-scope="scope">
-                    <span v-if="!isGr">{{scope.slaContent}}</span>
-                    <el-input v-else v-model="scope.slaContent" placeholder="输入SLA内容"></el-input>
+                    <span v-if="!isGr">{{scope.row.slaContent}}</span>
+                    <el-input v-else
+                              v-model="scope.row.slaContent"
+                              placeholder="输入SLA内容"></el-input>
                 </template>
             </el-table-column>
             <el-table-column
@@ -28,7 +32,10 @@
                 label="价格">
                 <template slot-scope="scope">
                     <span v-if="isAccountDetail">{{scope.row.slaPrice}}</span>
-                    <el-input v-else v-model="scope.row.slaPrice" placeholder="输入价格"></el-input>
+                    <el-input
+                        v-else
+                        v-model="scope.row.slaPrice"
+                        placeholder="输入价格"></el-input>
                 </template>
             </el-table-column>
             <el-table-column
@@ -62,6 +69,7 @@ export default {
     },
     data() {
         return {
+            currentRow: ''
         }
     },
     methods: {
