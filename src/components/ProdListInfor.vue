@@ -87,6 +87,14 @@ export default {
         isAccountDetail: {
             type: Boolean,
             default: false
+        },
+        isMOr: {
+            type: Boolean,
+            default: false
+        },
+        editor: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -97,7 +105,14 @@ export default {
     },
     methods: {
         goForDetail(row, event) {
-            this.$router.push(`/prodDetail?id=${row.pdtId}&version=${row.pdtVersion}`)
+            let url = `/prodDetail?id=${row.pdtId}&version=${row.pdtVersion}`
+            if (this.isMOr) {
+                url += `&isMOr=1`
+            }
+            if (this.editor) {
+                url += `&editor=1`
+            }
+            this.$router.push(url)
         },
         handleSelectionChange(selection) {
             this.$emit('addOrder', selection)

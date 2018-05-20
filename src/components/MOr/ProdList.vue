@@ -17,7 +17,7 @@
                 <el-button type="primary">搜索</el-button>
             </el-form>
         </div>
-        <prod-list-infor :prodList="prodList"></prod-list-infor>
+        <prod-list-infor :prodList="prodList" :isMOr="true" :editor="true"></prod-list-infor>
     </div>
 </template>
 <script>
