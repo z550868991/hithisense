@@ -27,7 +27,7 @@
                             <el-input v-model="baseInfor.iSCUrl" placeholder="输入服务访问地址"></el-input>
                         </el-form-item>
                         <el-form-item label="创建人：">
-                            <el-input v-model="baseInfor.createBy" placeholder="输入创建人"></el-input>
+                            <el-input v-model="baseInfor.createdBy" placeholder="输入创建人"></el-input>
                         </el-form-item>
                     </el-form>
                 </el-collapse-item>
@@ -50,7 +50,7 @@
                             label-width="1.2rem"
                             :inline="true">
                             <el-form-item label="数据库节点IP">
-                                <el-input v-model="databaseConfig.ip" placeholder="输入数据库节点IP"></el-input>
+                                <el-input v-model="databaseConfig.host" placeholder="输入数据库节点IP"></el-input>
                             </el-form-item>
                             <el-form-item label="端口">
                                 <el-input v-model="databaseConfig.port" placeholder="输入端口"></el-input>
@@ -59,15 +59,15 @@
                                 <el-input v-model="databaseConfig.database" placeholder="输入数据库"></el-input>
                             </el-form-item>
                             <el-form-item label="数据库驱动">
-                                <el-select v-model="databaseConfig.drive"  placeholder="选择数据库驱动">
+                                <el-select v-model="databaseConfig.driver"  placeholder="选择数据库驱动">
                                     <el-option label="MySQL" value="MySQL"></el-option>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="用户名">
-                                <el-input v-model="databaseConfig.username" placeholder="输入用户名"></el-input>
+                                <el-input v-model="databaseConfig.user" placeholder="输入用户名"></el-input>
                             </el-form-item>
                             <el-form-item label="密码">
-                                <el-input v-model="databaseConfig.pwd" placeholder="输入密码"></el-input>
+                                <el-input v-model="databaseConfig.password" placeholder="输入密码"></el-input>
                             </el-form-item>
                             <el-form-item label="URL">
                                 <el-input v-model="databaseConfig.url" placeholder="输入URL"></el-input>
@@ -98,13 +98,13 @@
                             <el-table-column
                                 label="访问端口">
                                 <template slot-scope="scope">
-                                    <input v-model="scope.row.pointPort" placeholder="输入访问端口">
+                                    <input v-model="scope.row.pointPort" placeholder="8080">
                                 </template>
                             </el-table-column>
                             <el-table-column
                                 label="传输端口">
                                 <template slot-scope="scope">
-                                    <input v-model="scope.row.pointAddress" placeholder="输入传输端口">
+                                    <input v-model="scope.row.pointAddress" placeholder="8090">
                                 </template>
                             </el-table-column>
                             <el-table-column
@@ -121,14 +121,14 @@
                 </el-collapse-item>
             </el-collapse>
             <div class="content-footer">
-                <el-button type="primary">部署iSC</el-button>
+                <el-button type="primary" @click="deployCommand">确认部署</el-button>
             </div>
         </div>
     </div>
 </template>
 <script>
 import ComponentInfor from '@/components/ComponentInfor'
-import {query} from '@/utils'
+import {query, uuid} from '@/utils'
 
 export default {
     components: {
@@ -143,17 +143,21 @@ export default {
                 iSCName: '',
                 iSCType: '',
                 iSCUrl: '',
-                createBy: ''
+                createdBy: '',
+                gmtCreate: '',
+                modifiedBy: '',
+                gmtModified: ''
             },
             compList: [],
             databaseConfig: {
-                ip: '',
-                database: '',
+                host: '',
                 port: '',
-                username: '',
-                pwd: '',
-                drive: '',
-                url: ''
+                database: '',
+                user: '',
+                password: '',
+                url: '',
+                driver: '',
+                iSCid: ''
             },
             pointConfigs: []
         }
@@ -163,6 +167,98 @@ export default {
         if (!!param.id) {
             this.baseInfor.iSCId = param.id
             this.baseInfor.ogId = param.og
+            this.$request
+                .post('/api/cloudplatform/selectMOriSCInfo-main')
+                .set('contentType', 'application/json')
+                .send({
+                    iSCID: param.id
+                })
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        this.baseInfor = res.body
+                    }
+                })
+            this.$request
+                .post('/api/cloudplatform/selectiSCInfo-BSCs')
+                .set('contentType', 'application/json')
+                .send({
+                    iSCID: param.id
+                })
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        this.compList = res.body
+                    }
+                })
+            this.$request
+                .post('/api/cloudplatform/selectMOriSCInfo-DB')
+                .set('contentType', 'application/json')
+                .send({
+                    iSCID: param.id
+                })
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        this.databaseConfig = res.body
+                    }
+                })
+            this.$request
+                .post('/api/cloudplatform/selectMOriSCInfo-SN')
+                .set('contentType', 'application/json')
+                .send({
+                    iSCID: param.id
+                })
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        let resSN = []
+                        for(let i = 0; i < res.body.length; i += 3) {
+                            resSN.push({
+                                pointIp: res.body[i],
+                                pointPort: res.body[i + 1],
+                                pointAddress: res.body[i + 2]
+                            })
+                        }
+                        this.pointConfigs = resSN
+                    }
+                })
+        } else {
+            let id = 'iSC' + uuid()
+            this.baseInfor.iSCId = id
+            this.baseInfor.ogId = param.og
+            this.$request
+                .post('/api/cloudplatform/deployiSCInfo-BSCs')
+                .set('contentType', 'application/json')
+                .send({
+                    orderId: param.oid
+                })
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        this.compList = res.body || []
+                    }
+                })
         }
     },
     methods: {
@@ -175,6 +271,75 @@ export default {
         },
         deletePoint(index) {
             this.pointConfigs.splice(index, 1)
+        },
+        deployCommand(flag) {
+            this.$request
+                .post('/api/cloudplatform/deploySaveiSCInfo-main')
+                .set('contentType', 'application/json')
+                .send(this.baseInfor)
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    }
+                })
+            let dbconn = this.databaseConfig
+            dbconn.iSCid = this.baseInfor.iSCId
+            this.$request
+                .post('/api/cloudplatform/deploySaveiSCInfo-DB')
+                .set('contentType', 'application/json')
+                .send(dbconn)
+                .end((err) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    }
+                })
+            let ipAndport = []
+            ipAndport.push(this.baseInfor.iSCId)
+            this.pointConfigs.forEach(item => {
+                ipAndport.push(item.pointIp)
+                ipAndport.push(item.pointPort)
+                ipAndport.push(item.pointAddress)
+            })
+            this.$request
+                .post('/api/cloudplatform/deploySaveiSCInfo-SN')
+                .set('contentType', 'application/json')
+                .send(ipAndport)
+                .end((err) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    }
+                })
+            let result = this.compList.map(item => {
+                return {
+                    id: item.bscID,
+                    version: item.version
+                }
+            })
+            result.unshift({
+                id: this.baseInfor.iSCId,
+                version: ''
+            })
+            this.$request
+                .post('/api/cloudplatform/deploySaveiSCInfo-BSCs')
+                .set('contentType', 'application/json')
+                .send(result)
+                .end((err) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    }
+                })
         }
     }
 }

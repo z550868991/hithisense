@@ -37,6 +37,20 @@ export default {
             },
             iscList: []
         }
+    },
+    created() {
+        this.$request
+            .get('/api/cloudplatform/MOriSCInfo')
+            .end((err, res) => {
+                if (!!err) {
+                    this.$message({
+                        type: 'error',
+                        message: err.response.text
+                    })
+                } else {
+                    this.iscList = res.body || []
+                }
+            })
     }
 }
 </script>

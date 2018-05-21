@@ -91,7 +91,7 @@
                     <span class="price">合计：{{acountMoney}}</span>
                     <el-button type="primary">结算</el-button>
                 </div>
-                <el-button v-if="isGr" type="primary" @click="submitOrder">提交</el-button>
+                <el-button v-if="isGr" type="primary" @click="submitOrder(0)">提交</el-button>
                 <el-button v-else type="primary" @click="deployOrder">部署iSC</el-button>
             </div>
         </div>
@@ -202,6 +202,9 @@ export default {
                             })
                         } else {
                             this.baseInfor = res.body
+                            this.approveInfor.approver = res.body.checkPerson
+                            this.approveInfor.approveDesc = res.body.checkComment
+                            this.approveInfor.approveDate = res.body.gmtCheck
                         }
                     })
                 this.$request
@@ -217,7 +220,7 @@ export default {
                                 message: err.response.text
                             })
                         } else {
-                            this.prodList = res.body
+                            this.prodList = res.body || []
                         }
                     })
                 this.$request
@@ -233,12 +236,9 @@ export default {
                                 message: err.response.text
                             })
                         } else {
-                            this.slas = res.body
+                            this.slas = res.body || []
                         }
                     })
-            }
-            if (!this.isAccountDetail) {
-                this.approveInfor.approveDate = formatDate(Date.now())
             }
         }
     },
@@ -271,11 +271,18 @@ export default {
                 slaContent: ''
             })
         },
-        submitOrder() {
+        submitOrder(flag) {
+            let mainInfor = this.baseInfor
+            if(flag === 1) {
+                mainInfor.auditFlag = '2'
+                mainInfor.checkPerson = this.approveInfor.approver
+                mainInfor.checkComment = this.approveInfor.approveDesc
+                mainInfor.gmtCheck = this.approveInfor.approveDate
+            }
             this.$request
                 .post('/api/cloudplatform/submitOrder-main')
                 .set('contentType', 'application/json')
-                .send(this.baseInfor)
+                .send(mainInfor)
                 .end((err) => {
                     if (!!err) {
                         this.$message({
@@ -290,7 +297,7 @@ export default {
                     orderId: this.baseInfor.orderId,
                     pdtId: item.pdtId,
                     pdtVersion: item.pdtVersion,
-                    pdtPrice: '',
+                    pdtPrice: item.pdtPrice,
                     createdBy: this.baseInfor.createdBy,
                     gmtCreate: formatDate(time) + ' ' + formatTime(time),
                     modifiedBy: '',
@@ -321,7 +328,7 @@ export default {
                         pdtVersion: item.prodVersion,
                         slaCode: sla.slaCoding,
                         slaContent: sla.slaContent,
-                        slaPrice: '',
+                        slaPrice: sla.slaPrice,
                         createdBy: this.baseInfor.createdBy,
                         gmtCreate: formatDate(time) + ' ' + formatTime(time),
                         modifiedBy: '',
@@ -343,7 +350,8 @@ export default {
                 })
         },
         deployOrder() {
-
+            this.submitOrder(1)
+            this.$router.push(`/iscdetail?og=${this.baseInfor.ogId}&oid=${this.baseInfor.orderId}`)
         }
     }
 }

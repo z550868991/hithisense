@@ -4,7 +4,7 @@
             :data="iscList"
             border
             style="width: 100%"
-            @row-dbclick="goForDetail">
+            @row-dblclick="goForDetail">
             <el-table-column
                 type="index"
                 label="序号"
@@ -28,7 +28,7 @@
                 label="iSC类型">
             </el-table-column>
             <el-table-column
-                prop="created"
+                prop="gmtCreate"
                 label="创建时间">
             </el-table-column>
         </el-table>
@@ -51,7 +51,7 @@ export default {
     },
     methods: {
         goForDetail(row, event) {
-            this.$router.push(`iscdetail?id=${row.iSCId}&og=${row.ogId}`)
+            this.$router.push(`/iscdetail?id=${row.iSCId}&og=${row.ogId}`)
         }
     }
 }
