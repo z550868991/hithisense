@@ -168,7 +168,7 @@ export default {
             this.baseInfor.iSCId = param.id
             this.baseInfor.ogId = param.og
             this.$request
-                .post('/api/cloudplatform/selectMOriSCInfo-main')
+                .post('/api/cloudplatform/selectiSCInfo-main')
                 .set('contentType', 'application/json')
                 .send({
                     iSCID: param.id
@@ -277,7 +277,7 @@ export default {
                 .post('/api/cloudplatform/deploySaveiSCInfo-main')
                 .set('contentType', 'application/json')
                 .send(this.baseInfor)
-                .end((err, res) => {
+                .end((err) => {
                     if (!!err) {
                         this.$message({
                             type: 'error',

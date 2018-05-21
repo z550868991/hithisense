@@ -6,7 +6,7 @@
                 <p class="user-infor header-item">
                     <span>角色名称：{{userName}}</span>
                     <span class="content">
-                        <span class="user">{{userAccount}}</span>
+                        <span class="user" @click="accountInfor">{{userAccount}}</span>
                         <span class="logout" @click="logout">注销</span>
                     </span>
                 </p>
@@ -66,6 +66,11 @@ export default {
                         this.$router.push('/login')
                     }
                 })
+        },
+        accountInfor() {
+            if(this.$store.state.userInfor.type === 'Gr') {
+                this.$router.push(`/gr/detail?account=${this.$store.state.userInfor.account}`)
+            }
         }
     }
 }

@@ -189,7 +189,7 @@ export default {
             if (!!param.id) {
                 this.baseInfor.orderId = param.id
                 this.$request
-                    .post('/api/cloudplatform/selectMOrorderInfo-base')
+                    .post('/api/cloudplatform/selectorderInfo-base')
                     .set('contentType', 'application/json')
                     .send({
                         orderId: this.baseInfor.orderId

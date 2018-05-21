@@ -37,6 +37,40 @@ export default {
             orders: [],
             iscList: []
         }
+    },
+    created() {
+        this.$request
+            .post('/api/cloudplatform/GrorderInfo')
+            .set('contentType', 'application/json')
+            .send({
+                account: this.$store.state.userInfor.account
+            })
+            .end((err, res) => {
+                if (!!err) {
+                    this.$message({
+                        type: 'error',
+                        message: err.response.text
+                    })
+                } else {
+                    this.orders = res.body || []
+                }
+            })
+        this.$request
+            .post('/api/cloudplatform/GriSCInfo')
+            .set('contentType', 'application/json')
+            .send({
+                account: this.$store.state.userInfor.account
+            })
+            .end((err, res) => {
+                if (!!err) {
+                    this.$message({
+                        type: 'error',
+                        message: err.response.text
+                    })
+                } else {
+                    this.iscList = res.body || []
+                }
+            })
     }
 }
 </script>
