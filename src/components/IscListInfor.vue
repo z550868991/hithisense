@@ -44,6 +44,10 @@ export default {
         isAccountDetail: {
             type: Boolean,
             default: false
+        },
+        isMOr: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -51,7 +55,11 @@ export default {
     },
     methods: {
         goForDetail(row, event) {
-            this.$router.push(`/iscdetail?id=${row.iSCId}&og=${row.ogId}`)
+            let url = `/iscdetail?id=${row.iSCId}&og=${row.ogId}`
+            if (this.isMOr) {
+                url += `&isMOr=1`
+            }
+            this.$router.push(url)
         }
     }
 }

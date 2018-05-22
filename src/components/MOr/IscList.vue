@@ -17,7 +17,7 @@
                 <el-button type="primary">搜索</el-button>
             </el-form>
         </div>
-        <isc-list-infor :iscList="iscList"></isc-list-infor>
+        <isc-list-infor :iscList="iscList" :isMOr="true"></isc-list-infor>
     </div>
 </template>
 <script>

@@ -89,10 +89,10 @@
             <div class="content-footer">
                 <div v-if="isAccountDetail" class="acount">
                     <span class="price">合计：{{acountMoney}}</span>
-                    <el-button type="primary">结算</el-button>
+                    <el-button type="primary" @click="settlement">结算</el-button>
                 </div>
                 <el-button v-if="isGr" type="primary" @click="submitOrder(0)">提交</el-button>
-                <el-button v-else type="primary" @click="deployOrder">部署iSC</el-button>
+                <el-button v-if="!isGr&&!isAccountDetail" type="primary" @click="deployOrder">部署iSC</el-button>
             </div>
         </div>
     </div>
@@ -243,19 +243,23 @@ export default {
         }
     },
     mounted() {
-        let acountMoney = 0
-        // 如果是订单详情2，这里写请求动作
         if (this.isAccountDetail) {
-            // 动作
-            this.prodList.forEach((pdt) => {
-                acountMoney += pdt.pdtPrice
-            })
-            this.slas.forEach((sla) => {
-                sla.slaList.forEach((item) => {
-                    acountMoney += item.slaPrice
+            this.$request
+                .post('/api/cloudplatform/getOrderPriceSum')
+                .set('contentType', 'application/json')
+                .send({
+                    orderId: this.baseInfor.orderId
                 })
-            })
-            this.acountMoney = acountMoney
+                .end((err, res) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        this.acountMoney = res.text
+                    }
+                })
         }
     },
     methods: {
@@ -348,10 +352,14 @@ export default {
                         })
                     }
                 })
+            if(!flag) this.$message('订单提交成功！')
         },
         deployOrder() {
             this.submitOrder(1)
-            this.$router.push(`/iscdetail?og=${this.baseInfor.ogId}&oid=${this.baseInfor.orderId}`)
+            this.$router.push(`/iscdetail?og=${this.baseInfor.ogId}&oid=${this.baseInfor.orderId}&isMOr=1`)
+        },
+        settlement() {
+
         }
     }
 }
