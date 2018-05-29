@@ -57,15 +57,15 @@
                             label-width="1.2rem"
                             :inline="true">
                             <el-form-item label="数据库节点IP">
-                                <el-input v-if="isMOr" v-model="databaseConfig.host" placeholder="输入数据库节点IP"></el-input>
+                                <el-input v-if="isMOr" v-model="databaseConfig.host" placeholder="输入数据库节点IP" @input="changeUrl"></el-input>
                                 <span v-else>{{databaseConfig.host}}</span>
                             </el-form-item>
                             <el-form-item label="端口">
-                                <el-input v-if="isMOr" v-model="databaseConfig.port" placeholder="输入端口"></el-input>
+                                <el-input v-if="isMOr" v-model="databaseConfig.port" placeholder="输入端口" @input="changeUrl"></el-input>
                                 <span v-else>{{databaseConfig.port}}</span>
                             </el-form-item>
                             <el-form-item label="数据库">
-                                <el-input v-if="isMOr" v-model="databaseConfig.database" placeholder="输入数据库"></el-input>
+                                <el-input v-if="isMOr" v-model="databaseConfig.database" placeholder="输入数据库" @input="changeUrl"></el-input>
                                 <span v-else>{{databaseConfig.database}}</span>
                             </el-form-item>
                             <el-form-item label="数据库驱动">
@@ -83,8 +83,7 @@
                                 <span v-else>{{databaseConfig.password}}</span>
                             </el-form-item>
                             <el-form-item label="URL">
-                                <el-input v-if="isMOr" v-model="databaseConfig.url" placeholder="输入URL"></el-input>
-                                <span v-else>{{databaseConfig.url}}</span>
+                                <span>jdbc:mysql://{{databaseConfig.url}}</span>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -175,7 +174,7 @@ export default {
                 user: '',
                 password: '',
                 url: '',
-                driver: '',
+                driver: 'MySQL',
                 iSCid: ''
             },
             pointConfigs: [],
@@ -283,6 +282,9 @@ export default {
         }
     },
     methods: {
+        changeUrl() {
+            this.databaseConfig.url = `${this.databaseConfig.host}:${this.databaseConfig.port}/${this.databaseConfig.database}`
+        },
         addPoint() {
             this.pointConfigs.push({
                 pointIp: '',
