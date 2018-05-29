@@ -29,6 +29,9 @@
                             <el-input v-if="isMOr" v-model="baseInfor.iSCUrl" placeholder="输入服务访问地址"></el-input>
                             <span v-else>{{baseInfor.iSCUrl}}</span>
                         </el-form-item>
+                        <el-form-item v-if="isMOr" label="起始组件名称：">
+                            <el-input v-model="startBSC" placeholder="输入起始组件名称"></el-input>
+                        </el-form-item>
                         <el-form-item label="创建人：">
                             <el-input v-if="isMOr" v-model="baseInfor.createdBy" placeholder="输入创建人"></el-input>
                             <span v-else>{{baseInfor.createdBy}}</span>
@@ -136,7 +139,7 @@
                 </el-collapse-item>
             </el-collapse>
             <div class="content-footer">
-                <el-button v-if="isMOr" type="primary" @click="deployCommand">确认部署</el-button>
+                <el-button v-if="isMOr" type="primary" @click="deployStep1">确认部署</el-button>
             </div>
         </div>
     </div>
@@ -152,6 +155,7 @@ export default {
     data() {
         return {
             activeNames: ['1'],
+            startBSC: '',
             baseInfor: {
                 iSCId: '',
                 ogId: '',
@@ -289,7 +293,7 @@ export default {
         deletePoint(index) {
             this.pointConfigs.splice(index, 1)
         },
-        deployCommand(flag) {
+        deployStep1() {
             this.$request
                 .post('/api/cloudplatform/deploySaveiSCInfo-main')
                 .set('contentType', 'application/json')
@@ -300,8 +304,12 @@ export default {
                             type: 'error',
                             message: err.response.text
                         })
+                    } else {
+                        this.deployStep2()
                     }
                 })
+        },
+        deployStep2() {
             let dbconn = this.databaseConfig
             dbconn.iSCid = this.baseInfor.iSCId
             this.$request
@@ -314,8 +322,12 @@ export default {
                             type: 'error',
                             message: err.response.text
                         })
+                    } else {
+                        this.deployStep3()
                     }
                 })
+        },
+        deployStep3() {
             let ipAndport = []
             ipAndport.push(this.baseInfor.iSCId)
             this.pointConfigs.forEach(item => {
@@ -333,8 +345,12 @@ export default {
                             type: 'error',
                             message: err.response.text
                         })
+                    } else {
+                        this.deployStep4()
                     }
                 })
+        },
+        deployStep4() {
             let result = this.compList.map(item => {
                 return {
                     id: item.bscID,
@@ -355,9 +371,29 @@ export default {
                             type: 'error',
                             message: err.response.text
                         })
+                    } else {
+                        this.deployStep5()
                     }
                 })
-            this.$message('部署请求已发送，等待服务节点部署')
+        },
+        deployStep5() {
+            let IDandURL = []
+            IDandURL.push(this.baseInfor.iSCId)
+            IDandURL.push(this.startBSC)
+            this.$request
+                .post('/api/cloudplatform/deployCommand')
+                .set('contentType', 'application/json')
+                .send(IDandURL)
+                .end((err) => {
+                    if (!!err) {
+                        this.$message({
+                            type: 'error',
+                            message: err.response.text
+                        })
+                    } else {
+                        this.$message('部署请求已发送，等待服务节点部署')
+                    }
+                })
         }
     }
 }
